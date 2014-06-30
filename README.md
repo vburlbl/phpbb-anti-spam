@@ -5,6 +5,14 @@ phpBB anti-spam plugin
 
 Fork of advanced_block_mod by Martin Truckenbrodt
 
+http://i.imgur.com/IeZ4vmS.jpg
+http://i.imgur.com/gUcg3n5.jpg
+http://i.imgur.com/j6vxaDn.jpg
+http://i.imgur.com/MRGGDHQ.jpg
+http://i.imgur.com/ASFUAPr.jpg
+http://i.imgur.com/ReOt1u0.jpg
+http://i.imgur.com/hlWZpkk.jpg
+http://i.imgur.com/BhAGXBT.jpg
 
 
 Description
