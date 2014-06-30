@@ -5,6 +5,8 @@ phpBB anti-spam plugin
 
 Fork of advanced_block_mod by Martin Truckenbrodt
 
+
+
 Description
 Advanced Block MOD improves the blocking features of phpBB.
 
@@ -28,9 +30,10 @@ Adds a feature to require an e-mail address for guest postings. The e-mail addre
 
 Supports Contact Board Administration MOD http://www.phpbb.com/customise/db/mod/c ... istration/ to redirect false positives to the contact page.
 
-Supports Advanced Double Activation Pack MOD http://www.phpbb.com/customise/db/mod/a ... tion_pack/ to add the Re-check spam feature to the ACP Verify user page.
+Supports Advanced Double Activation Pack MOD to add the Re-check spam feature to the ACP Verify user page.
 
-Supports Handyman` MOD version check - https://www.phpbb.com/customise/db/mod/ ... sion_check
+Supports Handyman` MOD version check
 
 Technical background information:
+
 dnsbl_check is included in phpBB3 Olympus by default. But it is using the spamhaus.org DNSBL. This list creates a lot of false positives. There are other DNSBLs - e.g. dnsbl.tornevall.org - which are more recommended for the prevention of board spam registrations and spam posts.
