@@ -1,0 +1,174 @@
+<!-- INCLUDE overall_header.html -->
+
+<a name="maincontent"></a>
+
+<!-- IF S_HTTPBL_EDIT -->
+
+	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
+
+	<h1>{L_TITLE} :: {HTTPBL_FQDN}</h1>
+
+	<p>{L_HTTPBL_EDIT_EXPLAIN}</p>
+
+	<!-- IF S_ERROR -->
+		<div class="errorbox">
+			<h3>{L_WARNING}</h3>
+			<p>{ERROR_MSG}</p>
+		</div>
+	<!-- ENDIF -->
+
+	<form id="httpbledit" method="post" action="{U_EDIT_ACTION}">
+
+	<fieldset>
+		<legend>{L_HTTPBL_SETTINGS}</legend>
+	<dl>
+		<dt><label for="httpbl_fullname">{L_HTTPBL_FULLNAME}:</label><br /><span>{L_HTTPBL_FULLNAME_EXPLAIN}</span></dt>
+		<dd>{HTTPBL_FULLNAME}</dd>
+	</dl>
+	<dl>
+		<dt><label for="httpbl_lookup">{L_HTTPBL_LOOKUP}:</label><br /><span>{L_HTTPBL_LOOKUP_EXPLAIN}</span></dt>
+		<dd>{HTTPBL_LOOKUP}</dd>
+	</dl>
+	<dl>
+		<dt><label for="httpbl_website">{L_HTTPBL_WEBSITE}:</label><br /><span>{L_HTTPBL_WEBSITE_EXPLAIN}</span></dt>
+		<dd><a href="{HTTPBL_WEBSITE}">{HTTPBL_WEBSITE}</a></dd>
+	</dl>
+	<dl>
+		<dt><label for="httpbl_details">{L_HTTPBL_DETAILS}:</label><br /><span>{L_HTTPBL_DETAILS_EXPLAIN}</span></dt>
+		<dd>{HTTPBL_DETAILS}</dd>
+	</dl>
+	<!-- IF S_HTTPBL_KEY_REQUIRED -->
+	<dl>
+		<dt><label for="httpbl_key">{L_HTTPBL_KEY}:</label><br /><span>{L_HTTPBL_KEY_EXPLAIN}</span></dt>
+		<dd><input class="text medium" type="text" id="httpbl_key" name="httpbl_key" value="{HTTPBL_KEY}" maxlength="255" /></dd>
+	</dl>
+	<!-- ENDIF -->
+	<!-- IF S_HTTPBL_USE_IP -->
+	<dl>
+		<dt><label for="httpbl_check_ip">{L_HTTPBL_CHECK_IP}:</label><br /><span>{L_HTTPBL_CHECK_IP_EXPLAIN}</span></dt>
+		<dd><label><input type="radio" class="radio" name="httpbl_check_ip" value="1"<!-- IF S_HTTPBL_CHECK_IP --> id="httpbl_check_ip" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+			<label><input type="radio" class="radio" name="httpbl_check_ip" value="0"<!-- IF not S_HTTPBL_CHECK_IP --> id="httpbl_check_ip" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
+	</dl>
+	<!-- ENDIF -->
+	<!-- IF S_HTTPBL_USE_USERNAME -->
+	<dl>
+		<dt><label for="httpbl_check_username">{L_HTTPBL_CHECK_USERNAME}:</label><br /><span>{L_HTTPBL_CHECK_USERNAME_EXPLAIN}</span></dt>
+		<dd><label><input type="radio" class="radio" name="httpbl_check_username" value="1"<!-- IF S_HTTPBL_CHECK_USERNAME --> id="httpbl_check_username" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+			<label><input type="radio" class="radio" name="httpbl_check_username" value="0"<!-- IF not S_HTTPBL_CHECK_USERNAME --> id="httpbl_check_username" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
+	</dl>
+	<!-- ENDIF -->
+	<!-- IF S_HTTPBL_USE_EMAIL -->
+	<dl>
+		<dt><label for="httpbl_check_email">{L_HTTPBL_CHECK_EMAIL}:</label><br /><span>{L_HTTPBL_CHECK_EMAIL_EXPLAIN}</span></dt>
+		<dd><label><input type="radio" class="radio" name="httpbl_check_email" value="1"<!-- IF S_HTTPBL_CHECK_EMAIL --> id="httpbl_check_email" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+			<label><input type="radio" class="radio" name="httpbl_check_email" value="0"<!-- IF not S_HTTPBL_CHECK_EMAIL --> id="httpbl_check_email" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
+	</dl>
+	<!-- ENDIF -->
+	<!-- IF S_HTTPBL_USE_MESSAGE -->
+	<dl>
+		<dt><label for="httpbl_check_message">{L_HTTPBL_CHECK_MESSAGE}:</label><br /><span>{L_HTTPBL_CHECK_MESSAGE_EXPLAIN}</span></dt>
+		<dd><label><input type="radio" class="radio" name="httpbl_check_message" value="1"<!-- IF S_HTTPBL_CHECK_MESSAGE --> id="httpbl_check_message" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+			<label><input type="radio" class="radio" name="httpbl_check_message" value="0"<!-- IF not S_HTTPBL_CHECK_MESSAGE --> id="httpbl_check_message" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
+	</dl>
+	<!-- ENDIF -->
+	<!-- IF S_HTTPBL_USE_TO_REPORT -->
+	<dl>
+		<dt><label for="httpbl_active_to_report">{L_HTTPBL_ACTIVE_TO_REPORT}:</label><br /><span>{L_HTTPBL_ACTIVE_TO_REPORT_EXPLAIN}</span></dt>
+		<dd><label><input type="radio" class="radio" name="httpbl_active_to_report" value="1"<!-- IF S_HTTPBL_ACTIVE_TO_REPORT --> id="httpbl_active_to_report" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+			<label><input type="radio" class="radio" name="httpbl_active_to_report" value="0"<!-- IF not S_HTTPBL_ACTIVE_TO_REPORT --> id="httpbl_active_to_report" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
+	</dl>
+	<!-- ENDIF -->
+	<!-- IF S_HTTPBL_USE_FOR_REPORT -->
+	<dl>
+		<dt><label for="httpbl_active_for_report">{L_HTTPBL_ACTIVE_FOR_REPORT}:</label><br /><span>{L_HTTPBL_ACTIVE_FOR_REPORT_EXPLAIN}</span></dt>
+		<dd><label><input type="radio" class="radio" name="httpbl_active_for_report" value="1"<!-- IF S_HTTPBL_ACTIVE_FOR_REPORT --> id="httpbl_active_for_report" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+			<label><input type="radio" class="radio" name="httpbl_active_for_report" value="0"<!-- IF not S_HTTPBL_ACTIVE_FOR_REPORT --> id="httpbl_active_for_report" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
+	</dl>
+	<!-- ENDIF -->
+	<dl>
+		<dt><label for="httpbl_weight">{L_HTTPBL_WEIGHT}:</label><br /><span>{L_HTTPBL_WEIGHT_EXPLAIN}</span></dt>
+		<dd><select id="httpbl_weight" name="httpbl_weight" onchange="display_options(this.options[this.selectedIndex].value);">{S_HTTPBL_WEIGHT_OPTIONS}</select> (<em>{L_ABM_DEFAULT}</em>: {HTTPBL_WEIGHT_DEFAULT})</dd>
+	</dl>
+	<dl>
+		<dt><label for="httpbl_count">{L_HTTPBL_COUNT}:</label><br /><span>{L_HTTPBL_COUNT_EXPLAIN}</span></dt>
+		<dd><label for="httpbl_count">{HTTPBL_COUNT}</label></dd>
+	</dl>
+	<dl>
+		<dt><label for="httpbl_count">{L_HTTPBL_RESET}:</label><br /><span>{L_HTTPBL_RESET_EXPLAIN}</span></dt>
+		<dd><input type="checkbox" class="radio" id="httpbl_reset" name="httpbl_reset" value="1" /></dd>
+		</dl>
+	</fieldset>
+
+	<fieldset class="submit-buttons">
+		<legend>{L_SUBMIT}</legend>
+		<input class="button1" type="submit" id="submit" name="update" value="{L_SUBMIT}" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+		{S_FORM_TOKEN}
+	</fieldset>
+	</form>
+
+<!-- ELSEIF S_HTTPBL_DELETE -->
+
+	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
+
+	<h1>{L_HTTPBL_DELETE}</h1>
+
+	<p>{L_HTTPBL_DELETE_EXPLAIN}</p>
+
+	<!-- IF S_ERROR -->
+		<div class="errorbox">
+			<h3>{L_WARNING}</h3>
+			<p>{ERROR_MSG}</p>
+		</div>
+	<!-- ENDIF -->
+
+	<form id="acp_httpbl" method="post" action="{U_ACTION}">
+
+	<fieldset>
+		<legend>{L_HTTPBL_DELETE}</legend>
+	<dl>
+		<dt><label>{L_HTTPBL_FQDN}:</label></dt>
+		<dd><strong>{HTTPBL_FQDN}</strong></dd>
+	</dl>
+
+	<p class="quick">
+		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
+	</p>
+	{S_FORM_TOKEN}
+	</fieldset>
+	</form>
+
+<!-- ELSE -->
+
+	<h1>{L_HTTPBL_ADMIN}</h1>
+
+	<p>{L_HTTPBL_ADMIN_EXPLAIN}</p>
+
+	<!-- IF ERROR_MSG -->
+		<div class="errorbox">
+			<h3>{L_WARNING}</h3>
+			<p>{ERROR_MSG}</p>
+		</div>
+	<!-- ENDIF -->
+
+	<!-- IF .httpbl -->
+		<table cellspacing="1">
+			<col class="row1" /><col class="row2" />
+		<tbody>
+		<!-- BEGIN httpbl -->
+			<tr>
+				<td><strong><a href="{httpbl.HTTPBL_WEBSITE}">{httpbl.HTTPBL_FULLNAME}</a></strong></td>
+				<td><em>{L_ABM_WEIGHT}</em>: <strong>{httpbl.HTTPBL_WEIGHT}</strong> (<em>{L_ABM_DEFAULT}</em>: {httpbl.HTTPBL_WEIGHT_DEFAULT})</td>
+				<td><em>{L_ABM_COUNT}</em>: <strong>{httpbl.HTTPBL_COUNT}</strong></td>
+				<td style="vertical-align: top; width: 80px; text-align: right; white-space: nowrap;">
+					<a href="{httpbl.U_EDIT}">{ICON_EDIT}</a>
+				</td>
+			</tr>
+		<!-- END httpbl -->
+		</tbody>
+		</table>
+	<!-- ENDIF -->
+
+<!-- ENDIF -->
+
+<!-- INCLUDE overall_footer.html -->

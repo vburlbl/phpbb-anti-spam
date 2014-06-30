@@ -1,0 +1,1289 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml-stylesheet type="text/xsl" href="modx.prosilver.en.xsl"?>
+<!--For security purposes, please check: https
+://www.phpbb.com/mods/ for the latest version of this MOD. Although MODs are checked before being allowed in the MODs Database there is no guarantee that there are no security problems within the MOD. No support will be given for MODs not found within the MODs Database which can be found at https://www.phpbb.com/mods/-->
+<mod xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="https://www.phpbb.com/mods/xml/modx-1.2.6.xsd">
+<header>
+	<license>http://opensource.org/licenses/gpl-license.php GNU General Public License v2</license>
+	<title lang="en">Advanced Block Mod</title>
+	<description lang="en">Replaces too much simple, not finished and unmaintained check_dnsbl phpBB3 core feature.
+		Adds more IP-RBL DNS, HTTP and Domain-RBL DNS blacklists and UTC-12 trick to phpBB3.
+		Supported HTTP blacklists: Stop Forum Spam, BotScout, Akismet, Project Honey Pot, Block Disposable Email Adresses.
+		All features and blacklists can be managed from extra ACP pages. Only some not important settings for the HTTP blacklists are hardcoded.
+		Blacklists can be weighted from 0 to 5. The weight values are added to reach a threshold value of 5 before spam will been blocked. So if configured spam needs to been found on several blacklists before it is blocked.
+		Adds a new log for Block actions. Adds logging for email_check_mx.
+		Adds a feature to re-check posts and users for spam to the Forum logs, WHO IS ONLINE, MCP -> post details, MCP -> report details and ACP -> Manage users -> Overview.
+		Allows to report spammers to HTTP blacklists manually and automatically.
+		Adds a feature to require an e-mail address for guest postings. The e-mail address will been displayed only for administrators at the re-check spam pages.
+		Supports Contact Board Administration MOD http://www.phpbb.com/customise/db/mod/contact_board_administration/ to redirect false positives to the contact page.
+		Supports Advanced Double Activation Pack MOD http://www.phpbb.com/customise/db/mod/advanced_double_activation_pack/ to add the Re-check spam feature to the ACP Verify user page.
+		Supports Handyman` MOD version check - https://www.phpbb.com/customise/db/mod/mod_version_check</description>
+
+	<author-notes lang="en">The MOD is adding following modules to the board:
+ACP -> GENERAL -> BLOCK CONFIGURATION -> Block settings
+ACP -> GENERAL -> BLOCK CONFIGURATION -> Domain-RBL settings
+ACP -> GENERAL -> BLOCK CONFIGURATION -> HTTP settings
+ACP -> GENERAL -> BLOCK CONFIGURATION -> IP-RBL settings
+ACP -> MAINTENANCE -> FORUM LOGS -> Block log
+All block and blacklist default settings are preconfigured and based on the experience of the MOD author.
+Installing this MOD will enable DNSMX check and it will disable the Spambot countermeasures automatically.
+For some of the HTTP blacklists you have to register an account on the blacklists websites. More details you can find under ACP -> GENERAL -> BLOCK CONFIGURATION -> HTTP BL settings.
+If you are sure that you do not have any false positives on your board then you can enable HTTP blacklists reporting.
+If you find false positives on your board then please contact the MOD author for feedback.
+For more information and documentation please visit http://www.phpbb.com/customise/db/mod/advanced_block_mod/faq/ and have a look to the screenshots there.
+There is no update from Advanced Block MOD lower than 1.1.3. Too much of the code has been completely rewritten. So unistall old Advanced Block MOD versions first before installing Advanced Block MOD 1.1.3 or higher. For update from ABM 1.1.0, 1.1.1 and 1.1.2 just compare and redo the file edits and run the umil_auto_abm.php.</author-notes>
+
+	<author-group>
+		<author>
+			<realname>Martin Truckenbrodt</realname>
+			<username>Martin Truckenbrodt</username>
+			<homepage>http://www.martin-truckenbrodt.com</homepage>
+		</author>
+	</author-group>
+
+	<mod-version>1.1.4</mod-version>
+
+	<installation>
+		<level>easy</level>
+		<time>3600</time>
+		<target-version>3.0.11</target-version>
+	</installation>
+
+	<history>
+		<entry>
+			<date>2012-05-05</date>
+			<rev-version>1.1.0</rev-version>
+			<changelog lang="en">
+				<change>first release of the Advanced Block MOD 1.1.x generation</change>
+			</changelog>
+		</entry>
+		<entry>
+			<date>2012-05-28</date>
+			<rev-version>1.1.1</rev-version>
+			<changelog lang="en">
+				<change>problem with AutoMOD compatibility in de.xml fixed</change>
+				<change>subsilver2 files missing subsilver2 layout fixed</change>
+			</changelog>
+		</entry>
+		<entry>
+			<date>2012-09-15</date>
+			<rev-version>1.1.2</rev-version>
+			<changelog lang="en">
+				<change>phpBB 3.0.11 compatibility</change>
+			</changelog>
+		</entry>
+		<entry>
+			<date>2012-11-14</date>
+			<rev-version>1.1.3</rev-version>
+			<changelog lang="en">
+				<change>a lot of smaller and larger fixes - Thank you very much to phpbb.com MOD validation team and all other reporters!</change>
+				<change>Handyman` MOD Version Check support added</change>
+			</changelog>
+		</entry>
+		<entry>
+			<date>2012-12-24</date>
+			<rev-version>1.1.4</rev-version>
+			<changelog lang="en">
+				<change>MODX 1.2.6</change>
+				<change>UMIL 1.0.5</change>
+				<change>for performance reasons check_spam for user registration placed before data validation</change>
+				<change>for performance reasons check_spam for posting only done if have not not been any errors before</change>
+				<change>Re-check spam feature added to ACP Users Overview page</change>
+			</changelog>
+		</entry>
+	</history>
+	<link-group>
+		<link type="contrib" href="contrib/ABM_update_1.1.3_to_1.1.4.xml" lang="en">Update ABM 1.1.3 to ABM 1.1.4</link>
+		<link type="language" href="contrib/languages/de.xml" lang="en">German</link>
+		<link type="template" href="contrib/templates/subsilver2.xml" lang="en">subsilver2</link>
+	</link-group>
+</header>
+
+<action-group>
+	<copy>
+		<file from="root/*.*" to="*.*" />
+	</copy>
+	<open src="adm/style/acp_logs.html">
+		<edit>
+			<find><![CDATA[			<td style="text-align: center;">{log.IP}</td>]]></find>
+			<inline-edit>
+				<inline-find><![CDATA[{log.IP}]]></inline-find>
+				<inline-action type="replace-with"><![CDATA[<a href="{log.U_SHOW_IP}">{log.IP}</a><br />[ <a href="{log.U_WHOIS}" onclick="popup(this.href, 700, 500, '_whois'); return false;">{L_WHOIS}</a> ]<br />[ <a href="{log.U_RECHECK_SPAM}" onclick="popup(this.href, 700, 500, '_whois'); return false;">{L_RECHECK_SPAM}</a> ]]]></inline-action>
+			</inline-edit>
+		</edit>
+	</open>
+	<open src="adm/style/acp_users_overview.html">
+		<edit>
+			<find><![CDATA[	<dd>[ <a href="{U_WHOIS}" onclick="popup(this.href, 700, 500, '_whois'); return false;">{L_WHOIS}</a> ]</dd>]]></find>
+			<inline-edit>
+				<inline-find><![CDATA[</dd>]]></inline-find>
+				<inline-action type="before-add"><![CDATA[ [ <a href="{U_RECHECK_SPAM}" onclick="popup(this.href, 700, 500, '_whois'); return false;">{L_RECHECK_SPAM}</a> ]]]></inline-action>
+			</inline-edit>
+		</edit>
+		<edit>
+			<find><![CDATA[					<!-- IF USER_HAS_POSTS -->
+						<select id="delete_type" name="delete_type"><option class="sep" value="">{L_SELECT_OPTION}</option><option value="retain">{L_RETAIN_POSTS}</option><option value="remove">{L_DELETE_POSTS}</option></select></dd>
+					<!-- ELSE -->
+						{L_USER_NO_POSTS_TO_DELETE}<input type="hidden" id="delete_type" name="delete_type" value="retain" />
+					<!-- ENDIF -->]]></find>
+			<action type="replace-with"><![CDATA[						<select id="delete_type" name="delete_type">
+							<option class="sep" value="">{L_SELECT_OPTION}</option>
+						<!-- IF USER_HAS_POSTS -->
+							<option value="retain">{L_RETAIN_POSTS}</option>
+							<option value="remove">{L_DELETE_POSTS}</option>
+						<!-- ELSE -->
+							<option class="sep" value="">{L_USER_NO_POSTS_TO_DELETE}</option>
+						<!-- ENDIF -->
+							<option value="report_spammer">{L_USER_ADMIN_REPORT_SPAMMER}</option>
+						</select>
+					</dd>]]></action>
+		</edit>
+	</open>
+	<open src="includes/acp/acp_board.php">
+		<edit>
+			<find><![CDATA[						'enable_post_confirm'	=> array('lang' => 'VISUAL_CONFIRM_POST',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),]]></find>
+			<action type="before-add"><![CDATA[						'check_iprbl_post'		=> array('lang' => 'CHECK_IPRBL_POST',		'validate' => 'int',	'type' => 'custom', 'method' => 'select_check_iprbl_post', 'explain' => true),
+						'check_httpbl_post'		=> array('lang' => 'CHECK_HTTPBL_POST',		'validate' => 'int',	'type' => 'custom', 'method' => 'select_check_httpbl_post', 'explain' => true),
+						'check_domainrbl_post'	=> array('lang' => 'CHECK_DOMAINRBL_POST',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'require_email_guest'	=> array('lang' => 'REQUIRE_EMAIL_GUEST',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[						'enable_confirm'		=> array('lang' => 'VISUAL_CONFIRM_REG',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),]]></find>
+			<action type="before-add"><![CDATA[						'check_iprbl_register'		=> array('lang' => 'CHECK_IPRBL_REGISTER',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'check_httpbl_register'		=> array('lang' => 'CHECK_HTTPBL_REGISTER',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'check_domainrbl_email'		=> array('lang' => 'CHECK_DOMAINRBL_EMAIL',		'validate' => 'int',	'type' => 'custom', 'method' => 'select_check_domainrbl_email', 'explain' => true),
+						'email_check_mx'			=> array('lang' => 'EMAIL_CHECK_MX',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'check_tz'					=> array('lang' => 'CHECK_TZ',				'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[						'check_dnsbl'			=> array('lang' => 'CHECK_DNSBL',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'email_check_mx'		=> array('lang' => 'EMAIL_CHECK_MX',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),]]></find>
+			<action type="before-add"><![CDATA[						/* check_dnsbl replaced with check_iprbl_... and both settings moved to BLOCK SETTINGS by Advanced Block MOD]]></action>
+			<action type="after-add"><![CDATA[						*/]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[			default:
+				trigger_error('NO_MODE', E_USER_ERROR);]]></find>
+			<action type="before-add"><![CDATA[			case 'block':
+				$display_vars = array(
+					'title'	=> 'ACP_BLOCK_SETTINGS',
+					'vars'	=> array(
+						'legend1'					=> 'GENERAL_SETTINGS',
+						'require_email_guest'		=> array('lang' => 'REQUIRE_EMAIL_GUEST',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'report_httpbl'				=> array('lang' => 'REPORT_HTTPBL',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'break_after_iprbl'			=> array('lang' => 'BREAK_AFTER_IPRBL',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'break_after_httpbl'		=> array('lang' => 'BREAK_AFTER_HTTPBL',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+
+						'legend2'					=> 'ACP_BLOCK_IPRBL',
+						'check_iprbl_register'		=> array('lang' => 'CHECK_IPRBL_REGISTER',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'check_iprbl_post'			=> array('lang' => 'CHECK_IPRBL_POST',		'validate' => 'int',	'type' => 'custom', 'method' => 'select_check_iprbl_post', 'explain' => true),
+						'log_check_iprbl'			=> array('lang' => 'LOG_CHECK_IPRBL',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+
+						'legend3'					=> 'ACP_BLOCK_HTTPBL',
+						'check_httpbl_register'		=> array('lang' => 'CHECK_HTTPBL_REGISTER',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'check_httpbl_profile'		=> array('lang' => 'CHECK_HTTPBL_PROFILE',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'check_httpbl_post'			=> array('lang' => 'CHECK_HTTPBL_POST',		'validate' => 'int',	'type' => 'custom', 'method' => 'select_check_httpbl_post', 'explain' => true),
+						'log_check_httpbl'			=> array('lang' => 'LOG_CHECK_HTTPBL',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+
+						'legend4'					=> 'ACP_BLOCK_DOMAINRBL',
+						'check_domainrbl_post'		=> array('lang' => 'CHECK_DOMAINRBL_POST',		'validate' => 'int',	'type' => 'custom', 'method' => 'select_check_domainrbl_post', 'explain' => true),
+						'check_domainrbl_email'		=> array('lang' => 'CHECK_DOMAINRBL_EMAIL',		'validate' => 'int',	'type' => 'custom', 'method' => 'select_check_domainrbl_email', 'explain' => true),
+						'check_domainrbl_website'	=> array('lang' => 'CHECK_DOMAINRBL_WEBSITE',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'check_domainrbl_signature'	=> array('lang' => 'CHECK_DOMAINRBL_SIGNATURE',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'log_check_domainrbl'		=> array('lang' => 'LOG_CHECK_DOMAINRBL',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+
+						'legend5'					=> 'ACP_BLOCK_DNSMX',
+						'email_check_mx'			=> array('lang' => 'EMAIL_CHECK_MX',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'log_email_check_mx'		=> array('lang' => 'LOG_EMAIL_CHECK_MX',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+
+						'legend6'					=> 'ACP_BLOCK_TZ',
+						'check_tz'					=> array('lang' => 'CHECK_TZ',				'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'log_check_tz'				=> array('lang' => 'LOG_CHECK_TZ',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+
+						'legend7'					=> 'ACP_SUBMIT_CHANGES',
+
+					)
+				);
+			break;
+]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[	/**
+	* Select referer validation
+	*/]]></find>
+			<action type="before-add"><![CDATA[	/**
+	* Select check_iprbl_post
+	*/
+	function select_check_iprbl_post($value, $key = '')
+	{
+		$radio_ary = array(SPAM_CHECK_NONE => 'NO_CHECK', SPAM_CHECK_GUESTS => 'GUESTS_ONLY', SPAM_CHECK_ALL => 'ALL');
+
+		return h_radio('config[check_iprbl_post]', $radio_ary, $value, $key);
+	}
+
+	/**
+	* Select check_httpbl_post
+	*/
+	function select_check_httpbl_post($value, $key = '')
+	{
+		$radio_ary = array(SPAM_CHECK_NONE => 'NO_CHECK', SPAM_CHECK_GUESTS => 'GUESTS_ONLY', SPAM_CHECK_ALL => 'ALL');
+
+		return h_radio('config[check_httpbl_post]', $radio_ary, $value, $key);
+	}
+
+	/**
+	* Select check_domainrbl_post
+	*/
+	function select_check_domainrbl_post($value, $key = '')
+	{
+		$radio_ary = array(SPAM_CHECK_NONE => 'NO_CHECK', SPAM_CHECK_GUESTS => 'GUESTS_ONLY', SPAM_CHECK_ALL => 'ALL');
+
+		return h_radio('config[check_domainrbl_post]', $radio_ary, $value, $key);
+	}
+
+	/**
+	* Select check_domainrbl_email
+	*/
+	function select_check_domainrbl_email($value, $key = '')
+	{
+		$radio_ary = array(SPAM_CHECK_NONE => 'NO_CHECK', SPAM_CHECK_GUESTS => 'GUESTS_ONLY', SPAM_CHECK_ALL => 'ALL');
+
+		return h_radio('config[check_domainrbl_email]', $radio_ary, $value, $key);
+	}
+]]></action>
+		</edit>
+	</open>
+	<open src="includes/acp/acp_inactive.php">
+		<edit>
+			<find><![CDATA[			if ($action !== 'delete' && !check_form_key($form_key))]]></find>
+			<inline-edit>
+				<inline-find><![CDATA[&& !check_form_key($form_key)]]></inline-find>
+				<inline-action type="before-add"><![CDATA[&& $action !== 'report_spammer' ]]></inline-action>
+			</inline-edit>
+		</edit>
+		<edit>
+			<find><![CDATA[				case 'activate':
+				case 'delete':]]></find>
+			<action type="after-add"><![CDATA[				case 'report_spammer':]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[					else if ($action == 'delete')]]></find>
+			<inline-edit>
+				<inline-find><![CDATA['delete']]></inline-find>
+				<inline-action type="after-add"><![CDATA[ || $action == 'report_spammer']]></inline-action>
+			</inline-edit>
+		</edit>
+		<edit>
+			<find><![CDATA[								user_delete('retain', $user_id, $user_affected[$user_id]);]]></find>
+			<inline-edit>
+				<inline-find><![CDATA['retain']]></inline-find>
+				<inline-action type="replace-with"><![CDATA[(($action == 'report_spammer') ? 'remove' : 'retain')]]></inline-action>
+			</inline-edit>
+		</edit>
+		<edit>
+			<find><![CDATA[							}
+
+							add_log('admin', 'LOG_INACTIVE_' . strtoupper($action), implode(', ', $user_affected));]]></find>
+			<action type="before-add"><![CDATA[								if ($config['report_httpbl'] && $action == 'report_spammer')
+								{
+									if (!function_exists('report_httpbl'))
+									{
+										include($phpbb_root_path . 'includes/abm/functions.' . $phpEx);
+									}
+									report_httpbl('inactive_user', $ip_affected[$user_id], $user_affected[$user_id], $email_affected[$user_id], '', '');
+								}]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[		$option_ary = array('activate' => 'ACTIVATE', 'delete' => 'DELETE');]]></find>
+			<inline-edit>
+				<inline-find><![CDATA['DELETE']]></inline-find>
+				<inline-action type="after-add"><![CDATA[, 'report_spammer' => 'USER_ADMIN_REPORT_SPAMMER']]></inline-action>
+			</inline-edit>
+		</edit>
+	</open>
+	<open src="includes/acp/acp_logs.php">
+		<edit>
+			<find><![CDATA[		$marked		= request_var('mark', array(0));]]></find>
+			<action type="after-add"><![CDATA[		$ip			= request_var('ip', 'ip');]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[		$this->log_type = constant('LOG_' . strtoupper($mode));
+]]></find>
+			<action type="after-add"><![CDATA[		// Whois (special case)
+		if ($action == 'whois')
+		{
+			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+
+			$user->add_lang('acp/users');
+
+			$this->page_title = 'WHOIS';
+			$this->tpl_name = 'simple_body';
+
+			$user_ip = request_var('user_ip', '');
+			$domain = gethostbyaddr($user_ip);
+			$ipwhois = user_ipwhois($user_ip);
+
+			$template->assign_vars(array(
+				'MESSAGE_TITLE'		=> sprintf($user->lang['IP_WHOIS_FOR'], $domain),
+				'MESSAGE_TEXT'		=> nl2br($ipwhois))
+			);
+
+			return;
+		}
+
+		// Recheck spam (special case)
+		if ($action == 'recheck_spam')
+		{
+			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			include($phpbb_root_path . 'includes/abm/functions.' . $phpEx);
+
+			$user->add_lang('acp/users');
+
+			$this->page_title = 'RECHECK_SPAM';
+			$this->tpl_name = 'simple_body';
+
+			$user_ip = request_var('user_ip', '');
+			$domain = gethostbyaddr($user_ip);
+
+			$template->assign_vars(array(
+				'MESSAGE_TITLE'		=> sprintf($user->lang['RECHECK_SPAM_FOR'], $domain) . '<br />' . sprintf($user->lang['RECHECK_SPAM_IP'], $user_ip),
+				'MESSAGE_TEXT'		=> nl2br(check_spam('user', 'recheck', $user_ip, 0, 0, false, false))
+			));
+
+			return;
+		}
+]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[			$checks = array('viewtopic', 'viewlogs', 'viewforum');]]></find>
+			<inline-edit>
+				<inline-find><![CDATA[)]]></inline-find>
+				<inline-action type="before-add"><![CDATA[, 'bllookup']]></inline-action>
+			</inline-edit>
+		</edit>
+		<edit>
+			<find><![CDATA[				'IP'				=> $row['ip'],]]></find>
+			<inline-edit>
+				<inline-find><![CDATA[$row['ip']]]></inline-find>
+				<inline-action type="before-add"><![CDATA[($ip == 'hostname') ? gethostbyaddr_with_cache($row['ip']) : ]]></inline-action>
+			</inline-edit>
+		</edit>
+		<edit>
+			<find><![CDATA[				'ID'				=> $row['id'],]]></find>
+			<action type="after-add"><![CDATA[				'U_SHOW_IP'			=> $this->u_action . "&amp;start=$start&amp;ip=" . (($ip == 'ip') ? 'hostname' : 'ip'),
+				'U_WHOIS'			=> $this->u_action . "&amp;action=whois&amp;user_ip={$row['ip']}",
+				'U_RECHECK_SPAM'	=> $this->u_action . "&amp;action=recheck_spam&amp;user_ip={$row['ip']}",]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[?>]]></find>
+			<action type="before-add"><![CDATA[/**
+* performance increasing with using cache for DNS queries
+* took idea from http://www.php.net/manual/en/function.gethostbyaddr.php#25091
+**/
+function gethostbyaddr_with_cache($address)
+{
+	global $dns_cache;
+
+	if (isset($dns_cache[$address]))
+	{
+		return $dns_cache[$address];
+	}
+	else
+	{
+		$dns_cache[$address] = gethostbyaddr($address);
+		return $dns_cache[$address];
+	}
+}
+]]></action>
+		</edit>
+	</open>
+	<open src="includes/acp/acp_styles.php">
+		<edit>
+			<find><![CDATA[				'icon_back_top', 'icon_contact_aim', 'icon_contact_email', 'icon_contact_icq', 'icon_contact_jabber', 'icon_contact_msnm', 'icon_contact_pm', 'icon_contact_yahoo', 'icon_contact_www', 'icon_post_delete', 'icon_post_edit', 'icon_post_info', 'icon_post_quote', 'icon_post_report', 'icon_user_online', 'icon_user_offline', 'icon_user_profile', 'icon_user_search', 'icon_user_warn', 'button_pm_forward', 'button_pm_new', 'button_pm_reply', 'button_topic_locked', 'button_topic_new', 'button_topic_reply',]]></find>
+			<inline-edit>
+				<inline-find><![CDATA['icon_post_delete']]></inline-find>
+				<inline-action type="after-add"><![CDATA[, 'icon_post_report_spam']]></inline-action>
+			</inline-edit>
+		</edit>
+	</open>
+	<open src="includes/acp/acp_users.php">
+		<edit>
+			<find><![CDATA[		// Show user selection mask]]></find>
+			<action type="before-add"><![CDATA[		// Recheck spam (special case)
+		if ($action == 'recheck_spam')
+		{
+			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			include($phpbb_root_path . 'includes/abm/functions.' . $phpEx);
+
+			$this->page_title = 'RECHECK_SPAM';
+			$this->tpl_name = 'simple_body';
+
+			$user_id = request_var('user_id', 0);
+			$user_ip = request_var('user_ip', '');
+			$domain = gethostbyaddr($user_ip);
+
+			$template->assign_vars(array(
+				'MESSAGE_TITLE'		=> sprintf($user->lang['RECHECK_SPAM_FOR'], $domain) . '<br />' . sprintf($user->lang['RECHECK_SPAM_IP'], $user_ip),
+				'MESSAGE_TEXT'		=> check_spam('user', 'recheck', $user_ip, $user_id, 0, false, false),
+			));
+
+			return;
+		}
+]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[								trigger_error($user->lang['USER_DELETED'] . adm_back_link($this->u_action));]]></find>
+			<inline-edit>
+				<inline-find><![CDATA[$user->lang['USER_DELETED']]]></inline-find>
+				<inline-action type="after-add"><![CDATA[ . (($delete_type == 'report_spammer') ? '<br />' . $user->lang['USER_REPORTED'] : '')]]></inline-action>
+			</inline-edit>
+		</edit>
+		<edit>
+			<find><![CDATA[					'U_WHOIS'		=> $this->u_action . "&amp;action=whois&amp;user_ip={$user_row['user_ip']}",]]></find>
+			<action type="after-add"><![CDATA[					'U_RECHECK_SPAM'	=> $this->u_action . "&amp;action=recheck_spam&amp;user_ip={$user_row['user_ip']}&amp;user_id={$user_row['user_id']}",]]></action>
+		</edit>
+	</open>
+	<open src="includes/acp/info/acp_board.php">
+		<edit>
+			<find><![CDATA[				'load'		=> array('title' => 'ACP_LOAD_SETTINGS', 'auth' => 'acl_a_server', 'cat' => array('ACP_SERVER_CONFIGURATION')),]]></find>
+			<action type="after-add"><![CDATA[
+				'block'		=> array('title' => 'ACP_BLOCK_SETTINGS', 'auth' => 'acl_a_server', 'cat' => array('ACP_BLOCK_CONFIGURATION')),]]></action>
+		</edit>
+	</open>
+	<open src="includes/acp/info/acp_logs.php">
+		<edit>
+			<find><![CDATA[				'critical'	=> array('title' => 'ACP_CRITICAL_LOGS', 'auth' => 'acl_a_viewlogs', 'cat' => array('ACP_FORUM_LOGS')),]]></find>
+			<action type="after-add"><![CDATA[				'block'		=> array('title' => 'ACP_BLOCK_LOGS', 'auth' => 'acl_a_viewlogs', 'cat' => array('ACP_FORUM_LOGS')),]]></action>
+		</edit>
+	</open>
+	<open src="includes/constants.php">
+		<edit>
+			<find><![CDATA[// Additional constants]]></find>
+			<action type="after-add"><![CDATA[define('SPAM_CHECK_NONE', 0);
+define('SPAM_CHECK_GUESTS', 1);
+define('SPAM_CHECK_ALL', 2);
+define('LOG_BLOCK', 4);
+define('WEIGHT_ZERO', 0);
+define('WEIGHT_ONE', 1);
+define('WEIGHT_TWO', 2);
+define('WEIGHT_THREE', 3);
+define('WEIGHT_FOUR', 4);
+define('WEIGHT_FIVE', 5);]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[// Additional tables]]></find>
+			<action type="after-add"><![CDATA[define('DOMAINRBL_TABLE',			$table_prefix . 'domainrbl');
+define('HTTPBL_TABLE',				$table_prefix . 'httpbl');
+define('IPRBL_TABLE',				$table_prefix . 'iprbl');]]></action>
+		</edit>
+	</open>
+	<open src="includes/functions.php">
+		<edit>
+			<find><![CDATA[function tz_select($default = '', $truncate = false)]]></find>
+			<inline-edit>
+				<inline-find><![CDATA[$truncate = false]]></inline-find>
+				<inline-action type="after-add"><![CDATA[, $mode = false]]></inline-action>
+			</inline-edit>
+		</edit>
+		<edit>
+			<find><![CDATA[	global $user;
+
+	$tz_select = '';]]></find>
+			<inline-edit>
+				<inline-find><![CDATA[	global $user]]></inline-find>
+				<inline-action type="after-add"><![CDATA[, $config]]></inline-action>
+			</inline-edit>
+		</edit>
+		<edit>
+			<find><![CDATA[	foreach ($user->lang['tz_zones'] as $offset => $zone)]]></find>
+			<action type="replace-with"><![CDATA[	$timezones = $user->lang['tz_zones'];
+
+	if ($mode !== 'register' || !$config['check_tz'])
+	{
+		$non_timezones = array('-19' => $user->lang['tz_zones']['-19'], '19' => $user->lang['tz_zones']['19']);
+		$timezones = array_diff_assoc($timezones, $non_timezones);
+	}
+
+	foreach ($timezones as $offset => $zone)]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[	$topic_id		= ($mode == 'mod') ? intval(array_shift($args)) : '';]]></find>
+			<action type="after-add"><![CDATA[	$iprbl_id		= ($mode == 'block') ? intval(array_shift($args)) : '';
+	$domainrbl_id	= ($mode == 'block') ? intval(array_shift($args)) : '';
+	$httpbl_id		= ($mode == 'block') ? intval(array_shift($args)) : '';]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[		case 'critical':
+			$sql_ary['log_type'] = LOG_CRITICAL;
+		break;
+]]></find>
+			<action type="after-add"><![CDATA[		case 'block':
+			$sql_ary += array(
+				'log_type'		=> LOG_BLOCK,
+				'iprbl_id'		=> $iprbl_id,
+				'domainrbl_id'	=> $domainrbl_id,
+				'httpbl_id'		=> $httpbl_id
+			);
+		break;
+]]></action>
+		</edit>
+	</open>
+	<open src="includes/functions_admin.php">
+		<edit>
+			<find><![CDATA[	$topic_id_list = $reportee_id_list = $is_auth = $is_mod = array();]]></find>
+			<inline-edit>
+				<inline-find><![CDATA[$reportee_id_list = ]]></inline-find>
+				<inline-action type="after-add"><![CDATA[$iprbl_id_list = $domainrbl_id_list = $httpbl_id_list = ]]></inline-action>
+			</inline-edit>
+		</edit>
+		<edit>
+			<find><![CDATA[		case 'critical':
+			$log_type = LOG_CRITICAL;
+			$sql_forum = '';
+		break;
+]]></find>
+			<action type="after-add"><![CDATA[		case 'block':
+			$log_type = LOG_BLOCK;
+			$sql_forum = '';
+		break;
+]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[		if ($row['reportee_id'])
+		{
+			$reportee_id_list[] = $row['reportee_id'];
+		}
+]]></find>
+			<action type="after-add"><![CDATA[		if ($row['iprbl_id'])
+		{
+			$iprbl_id_list[] = $row['iprbl_id'];
+		}
+
+		if ($row['domainrbl_id'])
+		{
+			$domainrbl_id_list[] = $row['domainrbl_id'];
+		}
+
+		if ($row['httpbl_id'])
+		{
+			$httpbl_id_list[] = $row['httpbl_id'];
+		}
+]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[			'reportee_username_full'=> '',]]></find>
+			<action type="after-add"><![CDATA[			'iprbl_id'				=> $row['iprbl_id'],
+			'domainrbl_id'			=> $row['domainrbl_id'],
+			'httpbl_id'				=> $row['httpbl_id'],]]></action>
+		</edit>
+	</open>
+	<open src="includes/functions_posting.php">
+		<edit>
+			<find><![CDATA[function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $update_message = true, $update_search_index = true)]]></find>
+			<inline-edit>
+				<inline-find><![CDATA[$update_search_index = true]]></inline-find>
+				<inline-action type="after-add"><![CDATA[, $user_email = false]]></inline-action>
+			</inline-edit>
+		</edit>
+		<edit>
+			<find><![CDATA[				'post_username'		=> (!$user->data['is_registered']) ? $username : '',]]></find>
+			<action type="after-add"><![CDATA[				'post_user_email'	=> (!$user->data['is_registered']) ? $user_email : '',]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[				'post_username'		=> ($username && $data['poster_id'] == ANONYMOUS) ? $username : '',]]></find>
+			<action type="after-add"><![CDATA[				'post_user_email'	=> (!$user->data['is_registered']) ? $user_email : '',]]></action>
+		</edit>
+	</open>
+	<open src="includes/functions_user.php">
+		<edit>
+			<find><![CDATA[		case 'remove':]]></find>
+			<action type="after-add"><![CDATA[		case 'report_spammer':
+
+			if ($config['report_httpbl'] && $mode == 'report_spammer')
+			{
+				if (!function_exists('report_httpbl'))
+				{
+					include($phpbb_root_path . 'includes/abm/functions.' . $phpEx);
+				}
+				report_httpbl('user_admin', $user_row['user_ip'], $user_row['username'], $user_row['user_email'], '');
+			}]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[	// Check MX record.
+	// The idea for this is from reading the UseBB blog/announcement. :)
+	if ($config['email_check_mx'])
+	{
+		list(, $domain) = explode('@', $email);
+
+		if (phpbb_checkdnsrr($domain, 'A') === false && phpbb_checkdnsrr($domain, 'MX') === false)
+		{
+			return 'DOMAIN_NO_MX_RECORD';
+		}
+	}]]></find>
+			<action type="before-add"><![CDATA[/* Advanced Block MOD - feature moved to ./includes/abm/functions.php]]></action>
+			<action type="after-add"><![CDATA[*/]]></action>
+		</edit>
+	</open>
+	<open src="includes/mcp/mcp_main.php">
+		<edit>
+			<find><![CDATA[			case 'delete_post':]]></find>
+			<action type="after-add"><![CDATA[			case 'report_spam':]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[				mcp_delete_post($post_ids);]]></find>
+			<action type="before-add"><![CDATA[				if ($config['report_httpbl'] && $quickmod && $action == 'report_spam')
+				{
+					include($phpbb_root_path . 'includes/abm/functions.' . $phpEx);
+					report_httpbl('post_mod', $post_data['poster_ip'], $post_data['post_username'], $post_data['post_user_email'], $message_parser->message);
+				}
+]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[				$this->tpl_name = ($action == 'whois') ? 'mcp_whois' : 'mcp_post';]]></find>
+			<inline-edit>
+				<inline-find><![CDATA['mcp_post']]></inline-find>
+				<inline-action type="before-add"><![CDATA[(($action == 'whois' || $action == 'recheck_spam') ? 'mcp_recheck_spam' : ]]></inline-action>
+				<inline-action type="after-add"><![CDATA[)]]></inline-action>
+			</inline-edit>
+		</edit>
+	</open>
+	<open src="includes/mcp/mcp_post.php">
+		<edit>
+			<find><![CDATA[		case 'chgposter':]]></find>
+			<action type="before-add"><![CDATA[		case 'recheck_spam':
+
+			if ($auth->acl_get('a_user'))
+			{
+				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+				include($phpbb_root_path . 'includes/abm/functions.' . $phpEx);
+
+				$ip = request_var('ip', '');
+				$domain = gethostbyaddr($post_info['poster_ip']);
+
+				$template->assign_vars(array(
+					'RETURN_POST'		=> sprintf($user->lang['RETURN_POST'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;p=$post_id") . '">', '</a>'),
+					'U_RETURN_POST'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;p=$post_id"),
+					'L_RETURN_POST'		=> sprintf($user->lang['RETURN_POST'], '', ''),
+					'MESSAGE_TITLE'		=> sprintf($user->lang['RECHECK_SPAM_FOR'], $domain) . '<br />' . sprintf($user->lang['RECHECK_SPAM_IP'], $post_info['poster_ip']) . sprintf($user->lang['RECHECK_SPAM_USERNAME'], ($post_info['post_username']) ? $post_info['post_username'] : (($post_info['username']) ? $post_info['username'] : $user->lang['GUEST'])) . sprintf($user->lang['RECHECK_SPAM_EMAIL'], ($post_info['post_user_email']) ? $post_info['post_user_email'] : (($post_info['user_email']) ? $post_info['user_email'] : $user->lang['NA'])),
+					'MESSAGE_TEXT'		=> check_spam('post', 'recheck', $post_info['poster_ip'], $post_info['poster_id'], $post_info['post_id'], false, false),
+				));
+			}
+
+			// We're done with the recheck_spam page so return
+			return;
+
+		break;
+]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[		'U_POST_AUTHOR'			=> get_username_string('profile', $post_info['user_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']),]]></find>
+			<action type="after-add"><![CDATA[		'POST_USER_EMAIL'		=> $post_info['post_user_email'],]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[		'U_WHOIS'				=> ($auth->acl_get('m_info', $post_info['forum_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;action=whois&amp;p=$post_id&amp;ip={$post_info['poster_ip']}") : '',]]></find>
+			<action type="after-add"><![CDATA[		'U_RECHECK_SPAM'		=> ($auth->acl_get('a_user')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;action=recheck_spam&amp;p=$post_id") : '',]]></action>
+		</edit>
+	</open>
+	<open src="includes/mcp/mcp_reports.php">
+		<edit>
+			<find><![CDATA[					'U_LOOKUP_IP'			=> ($auth->acl_get('m_info', $post_info['forum_id'])) ? $this->u_action . '&amp;r=' . $report_id . '&amp;p=' . $post_id . '&amp;f=' . $forum_id . '&amp;lookup=' . $post_info['poster_ip'] . '#ip' : '',]]></find>
+			<action type="after-add"><![CDATA[					'U_RECHECK_SPAM'		=> ($auth->acl_get('a_user')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=post_details&amp;action=recheck_spam&amp;p=$post_id") : '',]]></action>
+		</edit>
+	</open>
+	<open src="includes/session.php">
+		<edit>
+			<find><![CDATA[	function check_dnsbl($mode, $ip = false)
+	{
+		if ($ip === false)
+		{
+			$ip = $this->ip;
+		}
+
+		// Neither Spamhaus nor Spamcop supports IPv6 addresses.
+		if (strpos($ip, ':') !== false)
+		{
+			return false;
+		}
+
+		$dnsbl_check = array(
+			'sbl.spamhaus.org'	=> 'http://www.spamhaus.org/query/bl?ip=',
+		);
+
+		if ($mode == 'register')
+		{
+			$dnsbl_check['bl.spamcop.net'] = 'http://spamcop.net/bl.shtml?';
+		}
+
+		if ($ip)
+		{
+			$quads = explode('.', $ip);
+			$reverse_ip = $quads[3] . '.' . $quads[2] . '.' . $quads[1] . '.' . $quads[0];
+
+			// Need to be listed on all servers...
+			$listed = true;
+			$info = array();
+
+			foreach ($dnsbl_check as $dnsbl => $lookup)
+			{
+				if (phpbb_checkdnsrr($reverse_ip . '.' . $dnsbl . '.', 'A') === true)
+				{
+					$info = array($dnsbl, $lookup . $ip);
+				}
+				else
+				{
+					$listed = false;
+				}
+			}
+
+			if ($listed)
+			{
+				return $info;
+			}
+		}
+
+		return false;
+	}]]></find>
+			<action type="before-add"><![CDATA[/* Advanced Block MOD - feature replaced and moved to ./includes/abm/functions.php]]></action>
+			<action type="after-add"><![CDATA[*/]]></action>
+		</edit>
+	</open>
+	<open src="includes/ucp/ucp_profile.php">
+		<edit>
+			<find><![CDATA[		$user->add_lang('posting');
+]]></find>
+			<action type="after-add"><![CDATA[		include($phpbb_root_path . 'includes/abm/functions.' . $phpEx);
+]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[					if (!check_form_key('ucp_reg_details'))
+					{
+						$error[] = 'FORM_INVALID';
+					}
+
+]]></find>
+			<action type="after-add"><![CDATA[					$error = array_merge($error, check_spam('user', 'profile', $user->ip, 0, 0, $data, false));
+]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[					if (!check_form_key('ucp_profile_info'))
+					{
+						$error[] = 'FORM_INVALID';
+					}
+
+]]></find>
+			<action type="after-add"><![CDATA[					$error = array_merge($error, check_spam('user', 'profile', $user->ip, 0, 0, $data, false));
+]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[						if (!check_form_key('ucp_sig'))
+						{
+							$error[] = 'FORM_INVALID';
+						}
+]]></find>
+			<action type="after-add"><![CDATA[						$error = array_merge($error, check_spam('user', 'profile', $user->ip, 0, 0, $data, $message_parser));
+]]></action>
+		</edit>
+	</open>
+	<open src="includes/ucp/ucp_register.php">
+		<edit>
+			<find><![CDATA[		include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);]]></find>
+			<action type="after-add"><![CDATA[		include($phpbb_root_path . 'includes/abm/functions.' . $phpEx);]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[		// Check and initialize some variables if needed
+		if ($submit)
+		{]]></find>
+			<action type="after-add"><![CDATA[			//Advanced Block MOD - check for spam
+			$error = check_spam('user', 'register', $user->ip, 0, 0, $data, false);]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[			$error = validate_data($data, array(]]></find>
+			<inline-edit>
+				<inline-find><![CDATA[validate_data]]></inline-find>
+				<inline-action type="before-add"><![CDATA[array_merge($error, ]]></inline-action>
+			</inline-edit>
+		</edit>
+		<edit>
+			<find><![CDATA[				'tz'				=> array('num', false, -14, 14),]]></find>
+			<action type="replace-with"><![CDATA[				'tz'				=> array('num', false, -19, 19),]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[			));
+
+			if (!check_form_key('ucp_register'))]]></find>
+			<inline-edit>
+				<inline-find><![CDATA[));]]></inline-find>
+				<inline-action type="before-add"><![CDATA[)]]></inline-action>
+			</inline-edit>
+		</edit>
+		<edit>
+			<find><![CDATA[			// DNSBL check
+			if ($config['check_dnsbl'])
+			{
+				if (($dnsbl = $user->check_dnsbl('register')) !== false)
+				{
+					$error[] = sprintf($user->lang['IP_BLACKLISTED'], $user->ip, $dnsbl[1]);
+				}
+			}]]></find>
+			<action type="before-add"><![CDATA[			/* Advanced Block MOD - feature renamed and moved to ./includes/abm/functions.php]]></action>
+			<action type="after-add"><![CDATA[			*/]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[			'S_TZ_OPTIONS'		=> tz_select($data['tz']),]]></find>
+			<inline-edit>
+				<inline-find><![CDATA[),]]></inline-find>
+				<inline-action type="before-add"><![CDATA[, false, 'register']]></inline-action>
+			</inline-edit>
+		</edit>
+	</open>
+	<open src="language/en/acp/board.php">
+		<edit>
+			<find><![CDATA[	'CHECK_DNSBL'					=> 'Check IP against DNS Blackhole List',
+	'CHECK_DNSBL_EXPLAIN'			=> 'If enabled the user’s IP address is checked against the following DNSBL services on registration and posting: <a href="http://spamcop.net">spamcop.net</a> and <a href="http://www.spamhaus.org">www.spamhaus.org</a>. This lookup may take a while, depending on the server’s configuration. If slowdowns are experienced or too many false positives reported it is recommended to disable this check.',]]></find>
+				<action type="before-add"><![CDATA[	/* Advanced Block MOD - renamed]]></action>
+				<action type="after-add"><![CDATA[	*/]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[?>]]></find>
+				<action type="before-add"><![CDATA[// Advanced Block MOD
+$lang = array_merge($lang, array(
+	'ACP_BLOCK_DNSMX'					=> 'DNS MX check block settings.',
+	'ACP_BLOCK_DOMAINRBL'				=> 'Domain-RBL check block settings.',
+	'ACP_BLOCK_HTTPBL'					=> 'HTTP-BL check block settings.',
+	'ACP_BLOCK_IPRBL'					=> 'IP-RBL check block settings.',
+	'ACP_BLOCK_SETTINGS_EXPLAIN'		=> 'Here you can set the settings for blocking spam user registrations and spam posts and spam user detection.<br />These lookups may take a while, depending on the server’s configuration. If slowdowns are experienced or too many false positives reported it is recommended to disable these checks. ',
+	'ACP_BLOCK_TZ'						=> 'Timezone check block settings (UTC-12 trick).',
+	'BREAK_AFTER_HTTPBL'				=> 'Break blocking after successfully HTTP Blacklist check',
+	'BREAK_AFTER_HTTPBL_EXPLAIN'		=> 'If enabled, no Domain-RBL DNS check will be done when spammer has been blocked while HTTP blacklist check.',
+	'BREAK_AFTER_IPRBL'					=> 'Break blocking after successfully IP-RBL DNS check',
+	'BREAK_AFTER_IPRBL_EXPLAIN'			=> 'If enabled, no HTTP Blacklist check will be done when spammer has been blocked while IP-RBL DNS check.',
+	'CHECK_DOMAINRBL_EMAIL'				=> 'Check user E-mail domain against Domain-RBL DNS Blacklists',
+	'CHECK_DOMAINRBL_EMAIL_EXPLAIN'		=> 'If enabled, the E-mail domains is checked against Domain-RBL DNS Blacklists.',
+	'CHECK_DOMAINRBL_POST'				=> 'Check posted domains against Domain-RBL DNS Blacklists',
+	'CHECK_DOMAINRBL_POST_EXPLAIN'		=> 'If enabled, the domains of posted URLs are checked against Domain-RBL DNS Blacklists on posting. Enable it for all posts only if you have problems with successfully spam user registrations.',
+	'CHECK_DOMAINRBL_SIGNATURE'			=> 'Check user signature against Domain-RBL DNS Blacklists',
+	'CHECK_DOMAINRBL_SIGNATURE_EXPLAIN'	=> 'If enabled, the URLs of the signature are checked against Domain-RBL DNS Blacklists.',
+	'CHECK_DOMAINRBL_WEBSITE'			=> 'Check user website against Domain-RBL DNS Blacklists',
+	'CHECK_DOMAINRBL_WEBSITE_EXPLAIN'	=> 'If enabled, the website profile field is checked against Domain-RBL DNS Blacklists.',
+	'CHECK_HTTPBL_POST'					=> 'Check IP, username, e-mail address and message against HTTP Blacklists on posting',
+	'CHECK_HTTPBL_POST_EXPLAIN'			=> 'If enabled, the user’s IP address, username, e-mail address and message are checked against HTTP Blacklists on posting. Enable it for all posts only if you have problems with successfully spam user registrations.',
+	'CHECK_HTTPBL_PROFILE'				=> 'Check IP, username and e-mail address against HTTP Blacklists on updating profile',
+	'CHECK_HTTPBL_PROFILE_EXPLAIN'		=> 'If enabled, the user’s IP, username and e-mail address are checked against HTTP Blacklists on updating account settings or profile.',
+	'CHECK_HTTPBL_REGISTER'				=> 'Check IP, username and e-mail address against HTTP Blacklists on registration',
+	'CHECK_HTTPBL_REGISTER_EXPLAIN'		=> 'If enabled, the user’s IP, username and e-mail address are checked against HTTP Blacklists on registration.',
+	'CHECK_IPRBL_POST'					=> 'Check IP against IP-RBL DNS Blacklists on posting',
+	'CHECK_IPRBL_POST_EXPLAIN'			=> 'If enabled, the user’s IP address is checked against IP-RBL DNS Blacklists on posting. Enable it for all posts only if you have problems with successfully spam user registrations.',
+	'CHECK_IPRBL_REGISTER'				=> 'Check IP against IP-RBL DNS Blacklists on registration',
+	'CHECK_IPRBL_REGISTER_EXPLAIN'		=> 'If enabled, the user’s IP address is checked against IP-RBL DNS Blacklists on registration.',
+	'CHECK_TZ'							=> 'Check timezone setting',
+	'CHECK_TZ_EXPLAIN'					=> 'If enabled, the user’s timezone is checked against non-terrestrial values of -19 and +19 on registration. Spammer often are using the first or the last entry of the drop down menu. If this option is enabled two strange values are added to the begin and the end of the dropdown menue only on registration.',
+	'GUESTS_ONLY'						=> 'Guests only',
+	'LOG_CHECK_DOMAINRBL'				=> 'Enable block log for Domain-RBL DNS Blacklists check',
+	'LOG_CHECK_HTTPBL'					=> 'Enable block log for HTTP Remote databases check',
+	'LOG_CHECK_IPRBL'					=> 'Enable block log for IP-RBL DNS Blacklists check',
+	'LOG_CHECK_TZ'						=> 'Enable block log for timezone setting check',
+	'LOG_EMAIL_CHECK_MX'				=> 'Enable block log for e-mail domain valid MX record check',
+	'NO_CHECK'							=> 'None',
+	'REPORT_HTTPBL'						=> 'Report spammers to HTTP Blacklists',
+	'REPORT_HTTPBL_EXPLAIN'				=> 'If enabled, blocked spammers will be reported to HTTP Blacklists automatically.',
+	'REQUIRE_EMAIL_GUEST'				=> 'Require e-mail address for guest postings',
+	'REQUIRE_EMAIL_GUEST_EXPLAIN'		=> 'If enabled, for guest postings unregistered users have to enter an e-mail address. The e-mail address only will be displayed for forum moderators and administrators.',
+));
+]]></action>
+		</edit>
+	</open>
+	<open src="language/en/acp/common.php">
+		<edit>
+			<find><![CDATA[?>]]></find>
+			<action type="before-add"><![CDATA[// Advanced Block Mod
+$lang = array_merge($lang, array(
+	'ACP_BLOCK_CONFIGURATION'			=> 'Block configuration',
+	'ACP_BLOCK_LOGS'					=> 'Block log',
+	'ACP_BLOCK_LOGS_EXPLAIN'			=> 'This log lists the actions carried out by timezone check, DNS MX check and several blacklist checks e.g. while user registration and posting. This log provides you with information you are able to use for controlling the blacklist check functions. If you have appropriate permissions you can also clear individual operations or the log as a whole.<br /><strong>The different log features have to be enabled under BLOCK CONFIGURATION!</strong>',
+	'ACP_BLOCK_SETTINGS'				=> 'Block settings',
+	'ACP_DOMAINRBL'						=> 'Domain-RBL settings',
+	'ACP_HTTPBL'						=> 'HTTP-BL settings',
+	'ACP_IPRBL'							=> 'IP-RBL settings',
+
+	'LOG_CONFIG_BLOCK'					=> '<strong>Altered block settings</strong>',
+	'LOG_CLEAR_BLOCK'					=> '<strong>Cleared block log</strong>',
+	'LOG_DNSMX'							=> '<strong>User e-mail address blocked by DNS MX check.</strong><br />»Domain “<em>%s</em>”',
+	'LOG_DOMAINRBL_ADD'					=> '<strong>Created new Domain-RBL DNS Blacklist entry</strong><br />» %s',
+	'LOG_DOMAINRBL_DELETE'				=> '<strong>Deleted Domain-RBL DNS Blacklist entry</strong><br />» %s',
+	'LOG_DOMAINRBL_EDIT'				=> '<strong>Edited Domain-RBL DNS Blacklist entry details</strong><br />» %s',
+	'LOG_DOMAINRBL_FOUND'				=> '<strong>Spam domain recognized by Domain-RBL DNS check</strong><br />»Blacklist “<em>%1$s</em>”&nbsp;»Domain “<em>%2$s</em>”<br />»<a href="%3$s">Lookup blacklist</a>',
+	'LOG_DOMAINRBL_POST'				=> '<strong>User blocked while posting by Domain-RBL DNS check.</strong><br />For more information look at other entries for the same IP address.',
+	'LOG_DOMAINRBL_POST_EMAIL'			=> '<strong>User blocked while posting with e-mail address by Domain-RBL DNS check.</strong><br />For more information look at other entries for the same IP address.',
+	'LOG_DOMAINRBL_PROFILE_EMAIL'		=> '<strong>User blocked while changing account settings with e-mail address by Domain-RBL DNS check.</strong><br />For more information look at other entries for the same IP address.',
+	'LOG_DOMAINRBL_PROFILE_SIGNATURE'	=> '<strong>User blocked while updating signature by Domain-RBL DNS check.</strong><br />For more information look at other entries for the same IP address.',
+	'LOG_DOMAINRBL_PROFILE_WEBSITE'		=> '<strong>User blocked while updating website profile field by Domain-RBL DNS check.</strong><br />For more information look at other entries for the same IP address.',
+	'LOG_DOMAINRBL_REGISTER_EMAIL'		=> '<strong>User blocked while registering with e-mail address by Domain-RBL DNS check.</strong><br />For more information look at other entries for the same IP address.',
+	'LOG_ERROR_HTTPBL'					=> '<strong>HTTP Blacklist error</strong><br />»<em>Blacklist</em>: “<em>%1$s</em>” »<em>Error</em>: “<em>%2$s %3$s</em>”',
+	'LOG_HTTPBL_EDIT'					=> '<strong>Edited HTTP blacklist entry details</strong><br />» %s',
+	'LOG_HTTPBL_FOUND'					=> '<strong>User data of spammer recognized by HTTP blacklist check.</strong><br />»Blacklist “<em>%1$s</em>” »found values “<em>%2$s</em>”<br />»<a href="%3$s">Lookup blacklist</a>',
+	'LOG_HTTPBL_POST'					=> '<strong>User blocked while posting by HTTP blacklist check.</strong><br />For more information look at other entries for the same IP address.',
+	'LOG_HTTPBL_PROFILE'				=> '<strong>User blocked while updating profile or account settings by HTTP blacklist check.</strong><br />For more information look at other entries for the same IP address.',
+	'LOG_HTTPBL_REGISTER'				=> '<strong>User blocked while registration by HTTP blacklist check.</strong><br />For more information look at other entries for the same IP address.',
+	'LOG_HTTPBL_REPORTED_POST'			=> '<strong>User data while posting reported automatically to HTTP blacklist.</strong><br />»Blacklist “<em>%1$s</em>” »ip “<em>%3$s</em>” »username “<em>%2$s</em>” »e-mail “<em>%4$s</em>”<br />»<a href="%5$s">Lookup blacklist</a>',
+	'LOG_HTTPBL_REPORTED_POST_MOD'		=> '<strong>User data while moderating post reported manually by moderator or administrator to HTTP Blacklist.</strong><br />»Blacklist “<em>%1$s</em>” »ip “<em>%3$s</em>” »username “<em>%2$s</em>” »e-mail “<em>%4$s</em>”<br />»<a href="%5$s">Lookup blacklist</a>',
+	'LOG_HTTPBL_REPORTED_PROFILE'		=> '<strong>User data while updating profile or account settings reported automatically to HTTP blacklist.</strong><br />»Blacklist “<em>%1$s</em>” »ip “<em>%3$s</em>” »username “<em>%2$s</em>” »e-mail “<em>%4$s</em>”<br />»<a href="%5$s">Lookup blacklist</a>',
+	'LOG_HTTPBL_REPORTED_REGISTER'		=> '<strong>User data while registration reported automatically to HTTP blacklist.</strong><br />»Blacklist “<em>%1$s</em>” »ip “<em>%3$s</em>” »username “<em>%2$s</em>” »e-mail “<em>%4$s</em>”<br />»<a href="%5$s">Lookup blacklist</a>',
+	'LOG_HTTPBL_REPORTED_USER_ADMIN'	=> '<strong>User data while administrating user reported manually by administrator to HTTP Blacklist.</strong><br />»Blacklist “<em>%1$s</em>” »ip “<em>%3$s</em>” »username “<em>%2$s</em>” »e-mail “<em>%4$s</em>”<br />»<a href="%5$s">Lookup blacklist</a>',
+	'LOG_INACTIVE_REPORT_SPAMMER'		=> '<strong>Deleted and reported as spammers inactive users</strong><br />» %s',
+	'LOG_IPRBL_ADD'						=> '<strong>Created new IP-RBL DNS Blacklist entry</strong><br />» %s',
+	'LOG_IPRBL_DELETE'					=> '<strong>Deleted IP-RBL DNS Blacklist entry</strong><br />» %s',
+	'LOG_IPRBL_EDIT'					=> '<strong>Edited IP-RBL DNS Blacklist entry details</strong><br />» %s',
+	'LOG_IPRBL_FOUND'					=> '<strong>IP address of spammer recognized by IP-RBL DNS check.</strong><br />»Blacklist “<em>%1$s</em>” »ip “<em>%2$s</em>”<br />»<a href="%3$s">Lookup blacklist</a>',
+	'LOG_IPRBL_POST'					=> '<strong>User blocked while posting by IP-RBL DNS check.</strong><br />For more information look at other entries for the same IP address.',
+	'LOG_IPRBL_PROFILE'					=> '<strong>User blocked while updating profile or account settings by IP-RBL DNS check.</strong><br />For more information look at other entries for the same IP address.',
+	'LOG_IPRBL_REGISTER'				=> '<strong>User blocked while registration by IP-RBL DNS check.</strong><br />For more information look at other entries for the same IP address.',
+	'LOG_WRONG_TZ'						=> '<strong>User blocked by timezone check.</strong><br />»Timezone “<em>%s</em>”',
+
+	'USER_ADMIN_REPORT_SPAMMER'			=> 'Delete posts and report spammer',
+	'USER_REPORTED'						=> 'User reported as spammer successfully.',
+));
+]]></action>
+		</edit>
+	</open>
+	<open src="language/en/acp/styles.php">
+		<edit>
+			<find><![CDATA[	'IMG_ICON_POST_DELETE'			=> 'Delete post',]]></find>
+			<action type="after-add"><![CDATA[	'IMG_ICON_POST_REPORT_SPAM'		=> 'Report spam post',]]></action>
+		</edit>
+	</open>
+	<open src="language/en/common.php">
+		<edit>
+			<find><![CDATA[		'-12'	=> '[UTC - 12] Baker Island Time',]]></find>
+			<action type="before-add"><![CDATA[		'-19'	=> '[UTC - 199] Spambot Time',]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[		'14'	=> '[UTC + 14] Line Island Time',]]></find>
+			<action type="after-add"><![CDATA[		'19'	=> '[UTC + 199] Spambot Time',]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[?>]]></find>
+			<action type="before-add"><![CDATA[// Advanced Block MOD
+$lang = array_merge($lang, array(
+	'BLACKLISTED_INFO'						=> 'An entry on the blacklist may have several reasons:<br />1. You are a well-known spammer.<br />2. Last time a well-known spammer was using the dynamic IP address which you got from your ISP (Internet Service Provider), your e-mail address or the username you have choosen.<br />3. Your ISP is well-known for a lot of spamming customers and is not fighting against spammers enough.',
+	'CONTACT_BLACKLISTED'					=> 'If you are not a spammer you can <a href="%s">contact the board administration</a>.',
+	'DOMAIN_BLACKLISTED'					=> 'The domain %1$s you have posted has been blocked because it is blacklisted. For details please see <a href="%2$s">%2$s</a>.',
+	'EMAIL_DOMAIN_BLACKLISTED'				=> 'The e-mail domain %1$s you have used for your e-mail address has been blocked because it is blacklisted. For details please see <a href="%2$s">%2$s</a>.',
+	'HTTPBL_BLACKLISTED'					=> 'Your IP %1$s or your username %2$s or your e-mail address %3$s has been blocked because it is blacklisted. For details please see <a href="%4$s">%4$s</a>.',
+	// 'IP_BLACKLISTED' see above - it is phpBB3 core code
+	'RECHECK_SPAM'							=> 'Re-Check spam',
+	'RECHECK_SPAM_BREAK'					=> '<br /><strong>Normally spam check would been stopped here!</strong><br /><br />',
+	'RECHECK_SPAM_DNSMX'					=> '<strong><em>E-mail domain would been blocked by DNS MX check.</em></strong><br />E-mail domain: <strong>%s</strong><br />',
+	'RECHECK_SPAM_DOMAINRBL_EMAIL'			=> '<strong><em>E-mail domain would been blocked by following Domain-RBL DNS Blacklist(s):</em></strong><br />',
+	'RECHECK_SPAM_DOMAINRBL_EMAIL_NEXT'		=> '<strong><em>E-mail domain also would been found by following Domain-RBL DNS Blacklist(s):</em></strong><br />',
+	'RECHECK_SPAM_DOMAINRBL_EMAIL_NO'		=> '<strong><em>If blocking would be enabled or the settings for the Domain-RBL DNS Blacklists would been different then it would been blocked by following Domain-RBL DNS Blacklist(s):</em></strong><br />',
+	'RECHECK_SPAM_DOMAINRBL_EMAIL_NOT'		=> '<strong><em>E-mail domain would not been blocked but found by following Domain-RBL DNS Blacklist(s):</em></strong><br />',
+	'RECHECK_SPAM_DOMAINRBL_EMAIL_URI'		=> 'E-mail domain: <strong>%1$s</strong> • Domain-RBL: <strong>%2$s</strong> • <a href="%3$s">Lookup</a><br /><br />',
+	'RECHECK_SPAM_DOMAINRBL_POST'			=> '<strong><em>Posted domains would been blocked by following Domain-RBL DNS Blacklist(s):</em></strong><br />',
+	'RECHECK_SPAM_DOMAINRBL_POST_NEXT'		=> '<strong><em>Posted domains also would been found by following Domain-RBL DNS Blacklist(s):</em></strong><br />',
+	'RECHECK_SPAM_DOMAINRBL_POST_NO'		=> '<strong><em>If blocking would be enabled or the settings for the Domain-RBL DNS Blacklists would been different then the posted domains would been blocked by following Domain-RBL DNS Blacklist(s):</em></strong><br />',
+	'RECHECK_SPAM_DOMAINRBL_POST_NOT'		=> '<strong><em>Posted domains would not been blocked but found by following Domain-RBL DNS Blacklist(s):</em></strong><br />',
+	'RECHECK_SPAM_DOMAINRBL_POST_URI'		=> 'Posted domain: <strong>%1$s</strong> • Domain-RBL: <strong>%2$s</strong> • <a href="%3$s">Lookup</a><br />',
+	'RECHECK_SPAM_DOMAINRBL_SIGNATURE'		=> '<strong><em>Domains used in signature would been blocked by following Domain-RBL DNS Blacklist(s):</em></strong><br />',
+	'RECHECK_SPAM_DOMAINRBL_SIGNATURE_NEXT'	=> '<strong><em>Domains used in signature also would been found by following Domain-RBL DNS Blacklist(s):</em></strong><br />',
+	'RECHECK_SPAM_DOMAINRBL_SIGNATURE_NO'	=> '<strong><em>If blocking would be enabled or the settings for the Domain-RBL DNS Blacklists signature would been different then it would been blocked by following Domain-RBL DNS Blacklist(s):</em></strong><br />',
+	'RECHECK_SPAM_DOMAINRBL_SIGNATURE_NOT'	=> '<strong><em>Domains used in signature would not been blocked but found by following Domain-RBL DNS Blacklist(s):</em></strong><br />',
+	'RECHECK_SPAM_DOMAINRBL_SIGNATURE_URI'	=> 'Signature: <strong>%1$s</strong> • Domain-RBL: <strong>%2$s</strong> • <a href="%3$s">Lookup</a><br />',
+	'RECHECK_SPAM_DOMAINRBL_WEBSITE'		=> '<strong><em>Domain of website profile field would been blocked by following Domain-RBL DNS Blacklist(s):</em></strong><br />',
+	'RECHECK_SPAM_DOMAINRBL_WEBSITE_NEXT'	=> '<strong><em>Domain of website profile field also would been found by following Domain-RBL DNS Blacklist(s):</em></strong><br />',
+	'RECHECK_SPAM_DOMAINRBL_WEBSITE_NO'		=> '<strong><em>If blocking would be enabled or the settings for the Domain-RBL DNS Blacklists website profile field would been different then it would been blocked by following Domain-RBL DNS Blacklist(s):</em></strong><br />',
+	'RECHECK_SPAM_DOMAINRBL_WEBSITE_NOT'	=> '<strong><em>Domain of website profile field would not been blocked but found by following Domain-RBL DNS Blacklist(s):</em></strong><br />',
+	'RECHECK_SPAM_DOMAINRBL_WEBSITE_URI'	=> 'Domain of website: <strong>%1$s</strong> • Domain-RBL: <strong>%2$s</strong> • <a href="%3$s">Lookup</a><br /><br />',
+	'RECHECK_SPAM_DOMAINS'					=> 'Posted domains: %s<br />',
+	'RECHECK_SPAM_EMAILDOMAIN'				=> 'E-mail domain: %s<br />',
+	'RECHECK_SPAM_EMAIL'					=> 'E-mail: %s<br />',
+	'RECHECK_SPAM_FOR'						=> 'Re-Check spam for %s',
+	'RECHECK_SPAM_HTTPBL'					=> '<strong><em>Would been blocked by following HTTP Blacklist(s):</em></strong><br />',
+	'RECHECK_SPAM_HTTPBL_DATA'				=> 'HTTP-BL: <strong>%1$s</strong> • found values: <em>%3$s</em> • <a href="%2$s">Lookup</a><br />',
+	'RECHECK_SPAM_HTTPBL_NEXT'				=> '<strong><em>Also would been found by following HTTP Blacklist(s):</em></strong><br />',
+	'RECHECK_SPAM_HTTPBL_NO'				=> '<strong><em>If blocking would be enabled or the settings for the HTTP Blacklists would been different then it would been blocked by following HTTP Blacklist(s):</em></strong><br />',
+	'RECHECK_SPAM_HTTPBL_NOT'				=> '<strong><em>Would not been blocked but found by following HTTP Blacklist(s):</em></strong><br />',
+	'RECHECK_SPAM_IP'						=> 'IP: %s<br />',
+	'RECHECK_SPAM_IPRBL'					=> '<strong><em>Would been blocked by following IP-RBL DNS Blacklist(s):</em></strong><br />',
+	'RECHECK_SPAM_IPRBL_IP'					=> 'IP-RBL: <strong>%1$s</strong> • <a href="%2$s">Lookup</a><br />',
+	'RECHECK_SPAM_IPRBL_NEXT'				=> '<strong><em>Also would been found by following IP-RBL DNS Blacklist(s):</em></strong><br />',
+	'RECHECK_SPAM_IPRBL_NO'					=> '<strong><em>If blocking would be enabled or the settings for the IP-RBL DNS Blacklists would been different then it would been blocked by following IP-RBL DNS Blacklist(s):</em></strong><br />',
+	'RECHECK_SPAM_IPRBL_NOT'				=> '<strong><em>Would not been blocked but found by following IP-RBL DNS Blacklist(s):</em></strong><br />',
+	'RECHECK_SPAM_NO'						=> 'Not blocked or found by any feature. Seems not to be spam or spammer.',
+	'RECHECK_SPAM_USERNAME'					=> 'Username: %s<br />',
+	'REPORT_SPAM_POST'						=> 'Report and delete spam post',
+	'SIGNATURE_BLACKLISTED'					=> 'The domain %1$s you have used for your signature has been blocked because it is blacklisted. For details please see <a href="%2$s">%2$s</a>.',
+	'WEBSITE_BLACKLISTED'					=> 'The domain %1$s you have used for your website has been blocked because it is blacklisted. For details please see <a href="%2$s">%2$s</a>.',
+	'WRONG_TIMEZONE'						=> 'You entered an incorrect timezone. Please stay on earth!',
+));
+]]></action>
+		</edit>
+	</open>
+	<open src="language/en/mcp.php">
+		<edit>
+			<find><![CDATA[	'LOGVIEW_VIEWFORUM'			=> 'View forum',]]></find>
+			<action type="after-add"><![CDATA[	'LOGVIEW_BLLOOKUP'			=> 'Lookup blacklist',]]></action>
+		</edit>
+	</open>
+	<open src="posting.php">
+		<edit>
+			<find><![CDATA[include($phpbb_root_path . 'includes/message_parser.' . $phpEx);]]></find>
+			<action type="after-add"><![CDATA[include($phpbb_root_path . 'includes/abm/functions.' . $phpEx);]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[$delete		= (isset($_POST['delete'])) ? true : false;]]></find>
+			<action type="after-add"><![CDATA[$report_spam	= (isset($_POST['report_spam'])) ? true : false;]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[if (in_array($mode, array('post', 'reply', 'quote', 'edit', 'delete')) && !$forum_id)]]></find>
+			<inline-edit>
+				<inline-find><![CDATA[)) && !$forum_id]]></inline-find>
+				<inline-action type="before-add"><![CDATA[, 'report_spam']]></inline-action>
+			</inline-edit>
+		</edit>
+		<edit>
+			<find><![CDATA[		if (!$post_id)
+		{
+			$user->setup('posting');
+			trigger_error('NO_POST');
+		}]]></find>
+			<action type="before-add"><![CDATA[	case 'report_spam':]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[		$sql = 'SELECT f.*, t.*, p.*, u.username, u.username_clean, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield]]></find>
+			<inline-edit>
+				<inline-find><![CDATA[u.user_sig_bbcode_bitfield]]></inline-find>
+				<inline-action type="after-add"><![CDATA[, u.user_email]]></inline-action>
+			</inline-edit>
+		</edit>
+		<edit>
+			<find><![CDATA[		if ($user->data['is_registered'] && $auth->acl_gets('f_delete', 'm_delete', $forum_id))
+		{
+			$is_authed = true;
+		}]]></find>
+			<action type="before-add"><![CDATA[	case 'report_spam':]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[$post_data['poll_options']		= array();]]></find>
+			<action type="after-add"><![CDATA[$post_data['post_user_email']	= (!empty($post_data['post_user_email'])) ? $post_data['post_user_email'] : ((!empty($post_data['user_email'])) ? $post_data['user_email'] : '');]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[// Set some default variables]]></find>
+			<action type="before-add"><![CDATA[// Handle report spam and delete post ...
+if ($config['report_httpbl'] && $mode == 'report_spam')
+{
+	report_httpbl('post_mod', $post_data['poster_ip'], $post_data['post_username'], $post_data['post_user_email'], $message_parser->message);
+
+	handle_post_delete($forum_id, $topic_id, $post_id, $post_data);
+
+	return;
+}
+]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[	$post_data['username'] = ($mode == 'quote' || $mode == 'edit') ? trim($post_data['post_username']) : '';]]></find>
+			<action type="after-add"><![CDATA[	$post_data['post_user_email'] = ($mode == 'quote' || $mode == 'edit') ? trim($post_data['post_user_email']) : '';]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[	$post_data['username']			= utf8_normalize_nfc(request_var('username', $post_data['username'], true));]]></find>
+			<action type="after-add"><![CDATA[	$post_data['post_user_email']	= utf8_normalize_nfc(request_var('user_email', $post_data['post_user_email'], true));]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[	if ($config['enable_post_confirm'] && !$user->data['is_registered'] && in_array($mode, array('quote', 'post', 'reply')))]]></find>
+			<action type="before-add"><![CDATA[	// Validate user_email
+	if ((($post_data['post_user_email'] && !$user->data['is_registered']) || ($mode == 'edit' && $post_data['poster_id'] == ANONYMOUS && $post_data['post_user_email'])) && $config['require_email_guest'])
+	{
+		if (!function_exists('validate_email'))
+		{
+			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		}
+
+		if (($result = validate_email($post_data['post_user_email'], false)) != false)
+		{
+			$user->add_lang('ucp');
+			$error[] = $user->lang[$result . '_EMAIL'];
+		}
+	}
+]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[			'username'	=> utf8_normalize_nfc(request_var('username', '', true)),]]></find>
+			<action type="after-add"><![CDATA[			'user_email'	=> utf8_normalize_nfc(request_var('user_email', '', true)),]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[	// DNSBL check
+	if ($config['check_dnsbl'] && !$refresh)
+	{
+		if (($dnsbl = $user->check_dnsbl('post')) !== false)
+		{
+			$error[] = sprintf($user->lang['IP_BLACKLISTED'], $user->ip, $dnsbl[1]);
+		}
+	}]]></find>
+			<action type="before-add"><![CDATA[	/* Advanced Block MOD - renamed and moved to ./includes/abm/functions.php]]></action>
+			<action type="after-add"><![CDATA[	*/
+
+	//Advanced Block MOD - check for spam
+	//check it only if there are not any other errors by now
+	if (!sizeof($error))
+	{
+		$error = array_merge($error, check_spam('post', 'post', $user->ip, $user->data['user_id'], 0, $post_data, $message_parser));
+	}]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[			$redirect_url = submit_post($mode, $post_data['post_subject'], $post_data['username'], $post_data['topic_type'], $poll, $data, $update_message, ($update_message || $update_subject) ? true : false);]]></find>
+			<inline-edit>
+				<inline-find><![CDATA[true : false]]></inline-find>
+				<inline-action type="after-add"><![CDATA[, $post_data['post_user_email']]]></inline-action>
+			</inline-edit>
+		</edit>
+		<edit>
+			<find><![CDATA[		$page_title = $user->lang['EDIT_POST'];]]></find>
+			<action type="before-add"><![CDATA[	case 'report_spam':]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[	'USERNAME'				=> ((!$preview && $mode != 'quote') || $preview) ? $post_data['username'] : '',]]></find>
+			<action type="after-add"><![CDATA[	'USER_EMAIL'			=> ((!$preview && $mode != 'quote') || $preview) ? $post_data['post_user_email'] : '',]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[	'S_DISPLAY_USERNAME'		=> (!$user->data['is_registered'] || ($mode == 'edit' && $post_data['poster_id'] == ANONYMOUS)) ? true : false,]]></find>
+			<action type="after-add"><![CDATA[	'S_DISPLAY_EMAIL'			=> ((!$user->data['is_registered'] || ($mode == 'edit' && $post_data['poster_id'] == ANONYMOUS)) && $config['require_email_guest']) ? true : false,]]></action>
+		</edit>
+	</open>
+	<open src="styles/prosilver/imageset/imageset.cfg">
+		<edit>
+			<find><![CDATA[img_icon_post_report = icon_post_report.gif*20*20]]></find>
+			<action type="after-add"><![CDATA[img_icon_post_report_spam = icon_post_report_spam.gif*16*16]]></action>
+		</edit>
+	</open>
+	<open src="styles/prosilver/template/mcp_post.html">
+		<edit>
+			<find><![CDATA[		<p class="author">{MINI_POST_IMG} {L_POSTED} {L_POST_BY_AUTHOR} {POST_AUTHOR_FULL} &raquo; {POST_DATE}</p>]]></find>
+			<inline-edit>
+				<inline-find><![CDATA[{POST_AUTHOR_FULL} ]]></inline-find>
+				<inline-action type="after-add"><![CDATA[<!-- IF POST_USER_EMAIL -->&bull; {POST_USER_EMAIL} <!-- ENDIF -->]]></inline-action>
+			</inline-edit>
+		</edit>
+		<edit>
+			<find><![CDATA[			<div><!-- IF S_PM -->{L_THIS_PM_IP}<!-- ELSE -->{L_THIS_POST_IP}<!-- ENDIF -->: <!-- IF U_WHOIS -->
+				<a href="{U_WHOIS}"><!-- IF POST_IPADDR -->{POST_IPADDR}<!-- ELSE -->{POST_IP}<!-- ENDIF --></a> (<!-- IF POST_IPADDR -->{POST_IP}<!-- ELSE --><a href="{U_LOOKUP_IP}">{L_LOOKUP_IP}</a><!-- ENDIF -->)
+			<!-- ELSE -->
+				<!-- IF POST_IPADDR -->{POST_IPADDR} ({POST_IP})<!-- ELSE -->{POST_IP}<!-- IF U_LOOKUP_IP --> (<a href="{U_LOOKUP_IP}">{L_LOOKUP_IP}</a>)<!-- ENDIF --><!-- ENDIF -->]]></find>
+			<action type="after-add"><![CDATA[			<!-- ENDIF -->
+			<!-- IF U_RECHECK_SPAM -->
+				 (<a href="{U_RECHECK_SPAM}">{L_RECHECK_SPAM}</a>)]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[			<p>{L_THIS_POST_IP}: <!-- IF U_WHOIS -->
+				<a href="{U_WHOIS}"><!-- IF POST_IPADDR -->{POST_IPADDR}<!-- ELSE -->{POST_IP}<!-- ENDIF --></a> (<!-- IF POST_IPADDR -->{POST_IP}<!-- ELSE --><a href="{U_LOOKUP_IP}">{L_LOOKUP_IP}</a><!-- ENDIF -->)
+			<!-- ELSE -->
+				<!-- IF POST_IPADDR -->{POST_IPADDR} ({POST_IP})<!-- ELSE -->{POST_IP}<!-- IF U_LOOKUP_IP --> (<a href="{U_LOOKUP_IP}">{L_LOOKUP_IP}</a>)<!-- ENDIF --><!-- ENDIF -->]]></find>
+			<action type="after-add"><![CDATA[			<!-- ENDIF -->
+			<!-- IF U_RECHECK_SPAM -->
+				 (<a href="{U_RECHECK_SPAM}">{L_RECHECK_SPAM}</a>)]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[				<td><!-- IF iprow.HOSTNAME --><a href="{iprow.U_WHOIS}">{iprow.HOSTNAME}</a> ({iprow.IP})<!-- ELSE --><a href="{iprow.U_WHOIS}">{iprow.IP}</a> (<a href="{iprow.U_LOOKUP_IP}">{L_LOOKUP_IP}</a>)<!-- ENDIF --></td>]]></find>
+			<inline-edit>
+				<inline-find><![CDATA[<!-- ENDIF -->]]></inline-find>
+				<inline-action type="after-add"><![CDATA[<!-- IF iprow.U_RECHECK_SPAM --> (<a href="{iprow.U_RECHECK_SPAM}">{L_RECHECK_SPAM}</a>)<!-- ENDIF -->]]></inline-action>
+			</inline-edit>
+		</edit>
+	</open>
+	<open src="styles/prosilver/template/posting_editor.html">
+		<edit>
+			<find><![CDATA[	<!-- IF not S_PRIVMSGS and S_DISPLAY_USERNAME -->
+	<dl style="clear: left;">
+		<dt><label for="username">{L_USERNAME}:</label></dt>
+		<dd><input type="text" tabindex="1" name="username" id="username" size="25" value="{USERNAME}" class="inputbox autowidth" /></dd>
+	</dl>
+	<!-- ENDIF -->
+]]></find>
+			<action type="after-add"><![CDATA[	<!-- IF not S_PRIVMSGS and S_DISPLAY_EMAIL -->
+	<dl style="clear: left;">
+		<dt><label for="user_email">{L_EMAIL_ADDRESS}:</label></dt>
+		<dd><input type="text" tabindex="2" name="user_email" id="user_email" size="25" value="{USER_EMAIL}" class="inputbox autowidth" /></dd>
+	</dl>
+	<!-- ENDIF -->
+]]></action>
+		</edit>
+	</open>
+	<open src="styles/prosilver/template/viewonline_body.html">
+		<edit>
+			<find><![CDATA[			<td>{user_row.USERNAME_FULL}<!-- IF user_row.USER_IP --> <span style="margin-left: 30px;">{L_IP}: <a href="{user_row.U_USER_IP}">{user_row.USER_IP}</a> &#187; <a href="{user_row.U_WHOIS}" onclick="popup(this.href, 750, 500); return false;">{L_WHOIS}</a></span><!-- ENDIF -->]]></find>
+			<action type="after-add"><![CDATA[				<!-- IF user_row.U_RECHECK_SPAM --> &#187; <a href="{user_row.U_RECHECK_SPAM}" onclick="popup(this.href, 750, 500); return false;">{L_RECHECK_SPAM}</a><!-- ENDIF -->]]></action>
+		</edit>
+	</open>
+	<open src="styles/prosilver/template/viewtopic_body.html">
+		<edit>
+			<find><![CDATA[					<!-- IF postrow.U_EDIT --><li class="edit-icon"><a href="{postrow.U_EDIT}" title="{L_EDIT_POST}"><span>{L_EDIT_POST}</span></a></li><!-- ENDIF -->]]></find>
+			<action type="after-add"><![CDATA[					<!-- IF postrow.U_REPORT_SPAM --><li class="report-spam-icon"><a href="{postrow.U_REPORT_SPAM}" title="{L_REPORT_SPAM_POST}"><span>{L_REPORT_SPAM_POST}</span></a></li><!-- ENDIF -->]]></action>
+		</edit>
+	</open>
+	<open src="styles/prosilver/theme/buttons.css">
+		<edit>
+			<find><![CDATA[ul.profile-icons li.delete-icon	{ width: {IMG_ICON_POST_DELETE_WIDTH}px; height: {IMG_ICON_POST_DELETE_HEIGHT}px; }]]></find>
+			<action type="after-add"><![CDATA[ul.profile-icons li.report-spam-icon	{ width: {IMG_ICON_POST_REPORT_SPAM_WIDTH}px; height: {IMG_ICON_POST_REPORT_SPAM_HEIGHT}px; }]]></action>
+		</edit>
+	</open>
+	<open src="styles/prosilver/theme/colours.css">
+		<edit>
+			<find><![CDATA[.delete-icon, .delete-icon a		{ background-image: url("{IMG_ICON_POST_DELETE_SRC}"); }]]></find>
+			<action type="after-add"><![CDATA[.report-spam-icon, .report-spam-icon a		{ background-image: url("{IMG_ICON_POST_REPORT_SPAM_SRC}"); }]]></action>
+		</edit>
+	</open>
+	<open src="viewonline.php">
+		<edit>
+			<find><![CDATA[// Forum info]]></find>
+			<action type="before-add"><![CDATA[// Recheck spam requested
+if ($mode == 'recheck_spam' && $auth->acl_get('a_user') && $session_id && $user->data['user_type'] != USER_IGNORE)
+{
+	include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+	include($phpbb_root_path . 'includes/abm/functions.' . $phpEx);
+
+	$sql = 'SELECT u.user_id, u.username, u.user_type, s.session_ip
+		FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . " s
+		WHERE s.session_id = '" . $db->sql_escape($session_id) . "'
+			AND	u.user_id = s.session_user_id";
+	$result = $db->sql_query($sql);
+
+	if ($row = $db->sql_fetchrow($result))
+	{
+		$domain = gethostbyaddr($row['session_ip']);
+
+		$template->assign_vars(array(
+			'MESSAGE_TITLE'		=> sprintf($user->lang['RECHECK_SPAM_FOR'], $domain) . '<br />' . sprintf($user->lang['RECHECK_SPAM_IP'], $row['session_ip']),
+			'MESSAGE_TEXT'		=> check_spam('user', 'recheck', $row['session_ip'], 0, 0, false, false)
+		));
+	}
+	$db->sql_freeresult($result);
+
+	// Output the page
+	page_header($user->lang['RECHECK_SPAM']);
+
+	$template->set_filenames(array(
+		'body' => 'viewonline_recheck_spam.html')
+	);
+	make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
+
+	page_footer();
+}
+]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[		'U_WHOIS'			=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'mode=whois&amp;s=' . $row['session_id']),]]></find>
+			<action type="after-add"><![CDATA[		'U_RECHECK_SPAM'	=> ($auth->acl_get('a_user')) ? append_sid("{$phpbb_root_path}viewonline.$phpEx", 'mode=recheck_spam&amp;s=' . $row['session_id']) : '',]]></action>
+		</edit>
+	</open>
+	<open src="viewtopic.php">
+		<edit>
+			<find><![CDATA[	'REPORT_IMG'		=> $user->img('icon_post_report', 'REPORT_POST'),]]></find>
+			<action type="after-add"><![CDATA[	'REPORT_SPAM_IMG' 	=> $user->img('icon_post_report_spam', 'REPORT_SPAM_POST'),]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[		'U_REPORT'			=> ($auth->acl_get('f_report', $forum_id)) ? append_sid("{$phpbb_root_path}report.$phpEx", 'f=' . $forum_id . '&amp;p=' . $row['post_id']) : '',]]></find>
+			<action type="after-add"><![CDATA[		'U_REPORT_SPAM'		=> ($auth->acl_get('a_user')) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=report_spam&amp;f=$forum_id&amp;p={$row['post_id']}") : '',]]></action>
+		</edit>
+	</open>
+
+	<php-installer>umil_auto_abm.php</php-installer>
+</action-group>
+</mod>

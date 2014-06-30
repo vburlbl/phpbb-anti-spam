@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml-stylesheet type="text/xsl" href="modx.prosilver.en.xsl"?>
+<!--For security purposes, please check: https://www.phpbb.com/mods/ for the latest version of this MOD. Although MODs are checked before being allowed in the MODs Database there is no guarantee that there are no security problems within the MOD. No support will be given for MODs not found within the MODs Database which can be found at https://www.phpbb.com/mods/-->
+<mod xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="https://www.phpbb.com/mods/xml/modx-1.2.6.xsd">
+<header>
+	<license>http://opensource.org/licenses/gpl-license.php GNU General Public License v2</license>
+	<title lang="en">Advanced Block Mod - subsilver2 style</title>
+	<description lang="en">Subsilver2 style support for the Advanced Block Mod.</description>
+
+	<author-notes lang="en"></author-notes>
+
+	<author-group>
+		<author>
+			<realname>Martin Truckenbrodt</realname>
+			<username>Martin Truckenbrodt</username>
+			<homepage>http://www.martin-truckenbrodt.com</homepage>
+		</author>
+	</author-group>
+
+	<mod-version>1.1.4</mod-version>
+
+	<installation>
+		<level>easy</level>
+		<time>60</time>
+		<target-version>3.0.11</target-version>
+	</installation>
+
+	<history>
+		<entry>
+			<date>2012-05-05</date>
+			<rev-version>1.1.0</rev-version>
+			<changelog lang="en">
+				<change>first release of the Advanced Block MOD 1.1.x generation</change>
+			</changelog>
+		</entry>
+		<entry>
+			<date>2012-09-15</date>
+			<rev-version>1.1.2</rev-version>
+			<changelog lang="en">
+			<change>phpBB 3.0.11 compatibility</change>
+			</changelog>
+		</entry>
+		<entry>
+			<date>2012-11-14</date>
+			<rev-version>1.1.3</rev-version>
+			<changelog lang="en">
+			<change>some smaller und and larger bugs fixed</change>
+			</changelog>
+		</entry>
+		<entry>
+			<date>2012-12-23</date>
+			<rev-version>1.1.4</rev-version>
+			<changelog lang="en">
+				<change>MODX 1.2.6</change>
+			</changelog>
+		</entry>
+	</history>
+	<link-group>
+		<link type="parent" href="../../install.xml" lang="en">Advanced Block MOD - Main package</link>
+	</link-group>
+</header>
+
+<action-group>
+	<open src="styles/subsilver2/imageset/imageset.cfg">
+		<edit>
+			<find><![CDATA[img_icon_post_target = icon_post_target.gif*9*12]]></find>
+			<action type="before-add"><![CDATA[img_icon_post_report_spam = icon_post_report_spam.gif*16*16]]></action>
+		</edit>
+	</open>
+	<open src="styles/subsilver2/template/mcp_post.html">
+		<edit>
+			<find><![CDATA[				<!-- IF POST_IPADDR -->{POST_IPADDR} ({POST_IP})<!-- ELSE -->{POST_IP}<!-- IF U_LOOKUP_IP --> (<a href="{U_LOOKUP_IP}">{L_LOOKUP_IP}</a>)<!-- ENDIF --><!-- ENDIF -->]]></find>
+			<action type="after-add"><![CDATA[			<!-- ENDIF -->
+			<!-- IF U_RECHECK_SPAM -->
+				 (<a href="{U_RECHECK_SPAM}">{L_RECHECK_SPAM}</a>)]]></action>
+		</edit>
+		<edit>
+			<find><![CDATA[				<td><span class="gen"><!-- IF iprow.HOSTNAME --><a href="{iprow.U_WHOIS}">{iprow.HOSTNAME}</a> ({iprow.IP})<!-- ELSE --><a href="{iprow.U_WHOIS}">{iprow.IP}</a><!-- ENDIF --> [ {iprow.NUM_POSTS} {iprow.L_POST_S} ]</span></td>]]></find>
+			<inline-edit>
+				<inline-find><![CDATA[</span>]]></inline-find>
+				<inline-action type="before-add"><![CDATA[<!-- IF iprow.U_RECHECK_SPAM --> [ <a href="{iprow.U_RECHECK_SPAM}">{L_RECHECK_SPAM}</a> ]<!-- ENDIF -->]]></inline-action>
+			</inline-edit>
+		</edit>
+	</open>
+	<open src="styles/subsilver2/template/posting_body.html">
+		<edit>
+			<find><![CDATA[<!-- IF not S_PRIVMSGS and S_DISPLAY_USERNAME -->
+	<tr>
+		<td class="row1"><b class="genmed">{L_USERNAME}:</b></td>
+		<td class="row2"><input class="post" type="text" tabindex="1" name="username" size="25" value="{USERNAME}" /></td>
+	</tr>
+<!-- ENDIF -->
+]]></find>
+			<action type="after-add"><![CDATA[<!-- IF not S_PRIVMSGS and S_DISPLAY_EMAIL -->
+	<tr>
+		<td class="row1"><b class="genmed">{L_EMAIL_ADDRESS}:</b></td>
+		<td class="row2"><input class="post" type="text" tabindex="2" name="username" size="25" value="{USER_EMAIL}" /></td>
+	</tr>
+<!-- ENDIF -->
+]]></action>
+		</edit>
+	</open>
+	<open src="styles/subsilver2/template/viewonline_body.html">
+		<edit>
+			<find><![CDATA[		<td class="row1"><p class="gen">{user_row.USERNAME_FULL}</p><!-- IF user_row.USER_IP --><p class="gensmall">{L_IP}: <a href="{user_row.U_USER_IP}">{user_row.USER_IP}</a> &#187; <a href="{user_row.U_WHOIS}" onclick="popup(this.href, 750, 500); return false;">{L_WHOIS}</a></p><!-- ENDIF -->]]></find>
+			<inline-edit>
+				<inline-find><![CDATA[</p><!-- ENDIF -->]]></inline-find>
+				<inline-action type="before-add"><![CDATA[ &#187; <a href="{user_row.U_RECHECK_SPAM}" onclick="popup(this.href, 750, 500); return false;">{L_RECHECK_SPAM}</a>]]></inline-action>
+			</inline-edit>
+		</edit>
+	</open>
+	<open src="styles/subsilver2/template/viewtopic_body.html">
+		<edit>
+			<find><![CDATA[								<!-- IF postrow.U_REPORT --><a href="{postrow.U_REPORT}">{REPORT_IMG}</a> <!-- ENDIF --> ]]></find>
+			<action type="after-add"><![CDATA[								<!-- IF postrow.U_REPORT_SPAM --><a href="{postrow.U_REPORT_SPAM}">{REPORT_SPAM_IMG}</a> <!-- ENDIF -->]]></action>
+		</edit>
+	</open>
+</action-group>
+</mod>

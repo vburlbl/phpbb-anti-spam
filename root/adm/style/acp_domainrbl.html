@@ -1,0 +1,134 @@
+<!-- INCLUDE overall_header.html -->
+
+<a name="maincontent"></a>
+
+<!-- IF S_DOMAINRBL_EDIT -->
+
+	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
+
+	<h1>{L_TITLE} :: {DOMAINRBL_FQDN}</h1>
+
+	<p>{L_DOMAINRBL_EDIT_EXPLAIN}</p>
+
+	<!-- IF S_ERROR -->
+		<div class="errorbox">
+			<h3>{L_WARNING}</h3>
+			<p>{ERROR_MSG}</p>
+		</div>
+	<!-- ENDIF -->
+
+	<form id="domainrbledit" method="post" action="{U_EDIT_ACTION}">
+
+	<fieldset>
+		<legend>{L_DOMAINRBL_SETTINGS}</legend>
+	<dl>
+		<dt><label for="domainrbl_fqdn">{L_DOMAINRBL_FQDN}:</label><br /><span>{L_DOMAINRBL_FQDN_EXPLAIN}</span></dt>
+		<dd><input class="text medium" type="text" id="domainrbl_fqdn" name="domainrbl_fqdn" value="{DOMAINRBL_FQDN}" maxlength="255" /></dd>
+	</dl>
+	<dl>
+		<dt><label for="domainrbl_dns_a_record">{L_DOMAINRBL_DNS_A_RECORD}:</label><br /><span>{L_DOMAINRBL_DNS_A_RECORD_EXPLAIN}</span></dt>
+		<dd><label for="domainrbl_dns_a_record"><!-- IF S_DNS_A_RECORD -->{L_YES}<!-- ELSE -->{L_NO}<!-- ENDIF --></label></dd>
+	</dl>
+	<dl>
+		<dt><label for="domainrbl_lookup">{L_DOMAINRBL_LOOKUP}:</label><br /><span>{L_DOMAINRBL_LOOKUP_EXPLAIN}</span></dt>
+		<dd><input class="text medium" type="text" id="domainrbl_lookup" name="domainrbl_lookup" value="{DOMAINRBL_LOOKUP}" maxlength="255" /></dd>
+	</dl>
+	<dl>
+		<dt><label for="domainrbl_weight">{L_DOMAINRBL_WEIGHT}:</label><br /><span>{L_DOMAINRBL_WEIGHT_EXPLAIN}</span></dt>
+		<dd><select id="domainrbl_weight" name="domainrbl_weight" onchange="display_options(this.options[this.selectedIndex].value);">{S_DOMAINRBL_WEIGHT_OPTIONS}</select> (<em>{L_ABM_DEFAULT}</em>: {DOMAINRBL_WEIGHT_DEFAULT})</dd>
+	</dl>
+	<dl>
+		<dt><label for="domainrbl_count">{L_DOMAINRBL_COUNT}:</label><br /><span>{L_DOMAINRBL_COUNT_EXPLAIN}</span></dt>
+		<dd><label for="domainrbl_count">{DOMAINRBL_COUNT}</label></dd>
+	</dl>
+	<dl>
+		<dt><label for="domainrbl_count">{L_DOMAINRBL_RESET}:</label><br /><span>{L_DOMAINRBL_RESET_EXPLAIN}</span></dt>
+		<dd><input type="checkbox" class="radio" id="domainrbl_reset" name="domainrbl_reset" value="1" /></dd>
+		</dl>
+	</fieldset>
+
+	<fieldset class="submit-buttons">
+		<legend>{L_SUBMIT}</legend>
+		<input class="button1" type="submit" id="submit" name="update" value="{L_SUBMIT}" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+		{S_FORM_TOKEN}
+	</fieldset>
+	</form>
+
+<!-- ELSEIF S_DOMAINRBL_DELETE -->
+
+	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
+
+	<h1>{L_DOMAINRBL_DELETE}</h1>
+
+	<p>{L_DOMAINRBL_DELETE_EXPLAIN}</p>
+
+	<!-- IF S_ERROR -->
+		<div class="errorbox">
+			<h3>{L_WARNING}</h3>
+			<p>{ERROR_MSG}</p>
+		</div>
+	<!-- ENDIF -->
+
+	<form id="acp_domainrbl" method="post" action="{U_ACTION}">
+
+	<fieldset>
+		<legend>{L_DOMAINRBL_DELETE}</legend>
+	<dl>
+		<dt><label>{L_DOMAINRBL_FQDN}:</label></dt>
+		<dd><strong>{DOMAINRBL_FQDN}</strong></dd>
+	</dl>
+
+	<p class="quick">
+		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
+	</p>
+	{S_FORM_TOKEN}
+	</fieldset>
+	</form>
+
+<!-- ELSE -->
+
+	<h1>{L_DOMAINRBL_ADMIN}</h1>
+
+	<p>{L_DOMAINRBL_ADMIN_EXPLAIN}</p>
+
+	<!-- IF ERROR_MSG -->
+		<div class="errorbox">
+			<h3>{L_WARNING}</h3>
+			<p>{ERROR_MSG}</p>
+		</div>
+	<!-- ENDIF -->
+
+	<!-- IF .domainrbl -->
+		<table cellspacing="1">
+			<col class="row1" /><col class="row2" />
+		<tbody>
+		<!-- BEGIN domainrbl -->
+			<tr>
+				<td><strong>{domainrbl.DOMAINRBL_FQDN}</strong></td>
+				<td><em>{L_ABM_WEIGHT}</em>: <strong>{domainrbl.DOMAINRBL_WEIGHT}</strong> (<em>{L_ABM_DEFAULT}</em>: {domainrbl.DOMAINRBL_WEIGHT_DEFAULT})</td>
+				<td><em>{L_ABM_COUNT}</em>: <strong>{domainrbl.DOMAINRBL_COUNT}</strong></td>
+				<td style="vertical-align: top; width: 80px; text-align: right; white-space: nowrap;">
+					<a href="{domainrbl.U_EDIT}">{ICON_EDIT}</a>
+					<a href="{domainrbl.U_DELETE}">{ICON_DELETE}</a>
+				</td>
+			</tr>
+		<!-- END domainrbl -->
+		</tbody>
+		</table>
+	<!-- ENDIF -->
+
+	<form id="domainrbl" method="post" action="{U_ACTION}">
+
+	<fieldset class="quick">
+		<input type="hidden" name="action" value="add" />
+
+		<input type="text" name="domainrbl_fqdn" value="" maxlength="255" />
+		<input class="button2" name="adddomainrbl" type="submit" value="{L_DOMAINRBL_CREATE}" />
+		{S_FORM_TOKEN}
+	</fieldset>
+	</form>
+
+<!-- ENDIF -->
+
+<!-- INCLUDE overall_footer.html -->
