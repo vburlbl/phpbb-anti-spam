@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Phpbb-anti-spam : phpBB anti-spam plugin" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Phpbb-anti-spam</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/vburlbl/phpbb-anti-spam">View on GitHub</a>
+
+          <h1 id="project_title">Phpbb-anti-spam</h1>
+          <h2 id="project_tagline">phpBB anti-spam plugin</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/vburlbl/phpbb-anti-spam/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/vburlbl/phpbb-anti-spam/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="phpbb-anti-spam" class="anchor" href="#phpbb-anti-spam"><span class="octicon octicon-link"></span></a>phpbb-anti-spam</h1>
+
+<p>phpBB anti-spam plugin</p>
+
+<p>Fork of advanced_block_mod by Martin Truckenbrodt</p>
+
+<p>Interface overview</p>
+
+<p><a href="http://i.imgur.com/IeZ4vmS.jpg">http://i.imgur.com/IeZ4vmS.jpg</a></p>
+
+<p><a href="http://i.imgur.com/gUcg3n5.jpg">http://i.imgur.com/gUcg3n5.jpg</a></p>
+
+<p><a href="http://i.imgur.com/j6vxaDn.jpg">http://i.imgur.com/j6vxaDn.jpg</a></p>
+
+<p><a href="http://i.imgur.com/MRGGDHQ.jpg">http://i.imgur.com/MRGGDHQ.jpg</a></p>
+
+<p><a href="http://i.imgur.com/ASFUAPr.jpg">http://i.imgur.com/ASFUAPr.jpg</a></p>
+
+<p><a href="http://i.imgur.com/ReOt1u0.jpg">http://i.imgur.com/ReOt1u0.jpg</a></p>
+
+<p><a href="http://i.imgur.com/hlWZpkk.jpg">http://i.imgur.com/hlWZpkk.jpg</a></p>
+
+<p><a href="http://i.imgur.com/BhAGXBT.jpg">http://i.imgur.com/BhAGXBT.jpg</a></p>
+
+<p>Description
+Advanced Block MOD improves the blocking features of phpBB.</p>
+
+<p>Features:
+Replaces too much simple, not finished and unmaintained check_dnsbl phpBB3 core feature.
+Adds more IP-RBL DNS, HTTP and Domain-RBL DNS blacklists and UTC-12 trick to phpBB3.</p>
+
+<p>Supported HTTP blacklists: Stop Forum Spam, BotScout, Akismet, Project Honey Pot, Block Disposable Email Adresses.</p>
+
+<p>All features and blacklists can be managed from extra ACP pages. Only some not important settings for the HTTP blacklists are hardcoded.</p>
+
+<p>Blacklists can be weighted from 0 to 5. The weight values are added to reach a threshold value of 5 before spam will been blocked. So if configured spam needs to been found on several blacklists before it is blocked.</p>
+
+<p>Adds a new log for Block actions. Adds logging for email_check_mx.</p>
+
+<p>Adds a feature to re-check posts and users for spam to the Forum logs, WHO IS ONLINE, MCP -&gt; post details, MCP -&gt; report details and ACP -&gt; Manage users -&gt; Overview.</p>
+
+<p>Allows to report spammers to HTTP blacklists manually and automatically.</p>
+
+<p>Adds a feature to require an e-mail address for guest postings. The e-mail address will been displayed only for administrators at the re-check spam pages.</p>
+
+<p>Supports Contact Board Administration MOD <a href="http://www.phpbb.com/customise/db/mod/c">http://www.phpbb.com/customise/db/mod/c</a> ... istration/ to redirect false positives to the contact page.</p>
+
+<p>Supports Advanced Double Activation Pack MOD to add the Re-check spam feature to the ACP Verify user page.</p>
+
+<p>Supports Handyman` MOD version check</p>
+
+<p>Technical background information:</p>
+
+<p>dnsbl_check is included in phpBB3 Olympus by default. But it is using the spamhaus.org DNSBL. This list creates a lot of false positives. There are other DNSBLs - e.g. dnsbl.tornevall.org - which are more recommended for the prevention of board spam registrations and spam posts.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Phpbb-anti-spam maintained by <a href="https://github.com/vburlbl">vburlbl</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
